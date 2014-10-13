@@ -58,7 +58,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\IdentityCollection.cs" />
+    <Compile Include="DataModel\Author.cs" />
+    <Compile Include="DataModel\IdentityCollection.cs" />
+    <Compile Include="DataModel\Post.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Builtin\Renderers\MarkdownRenderer.cs" />
     <Compile Include="Builtin\Renderers\RazorRenderer.cs" />

@@ -9,7 +9,7 @@ There's a bunch of conventions and configuration that go into a site. The follow
     \posts
         For a blog, blog posts go in this folder
     \pages
-        Pages that aren't blog posts go here
+        Pages that aren't blog posts go here (and have a "path" metadata property)
     \static
         Static content like images and downloads go here, and will be uploaded to the site without processing.
     \themes

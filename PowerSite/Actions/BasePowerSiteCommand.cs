@@ -6,11 +6,9 @@ using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.PowerShell.Commands;
+using PowerSite.DataModel;
 
-namespace PowerSite
+namespace PowerSite.Actions
 {
     public class BasePowerSiteCommand : PSCmdlet
     {
@@ -22,13 +20,14 @@ namespace PowerSite
         private const string ConfigFile = "config.psd1";
 
         protected dynamic Config;
-        protected string SiteRootPath;
+
+        protected string _siteRootPath;
 
         protected override void BeginProcessing()
         {
-            if (string.IsNullOrEmpty(SiteRootPath))
+            if (string.IsNullOrEmpty(_siteRootPath))
             {
-                SiteRootPath = CurrentProviderLocation("FileSystem").ProviderPath;
+                _siteRootPath = CurrentProviderLocation("FileSystem").ProviderPath;
             }
 
             base.BeginProcessing();
@@ -38,10 +37,10 @@ namespace PowerSite
             var assembly = typeof(BasePowerSiteCommand).Assembly;
             catalog.Catalogs.Add(new AssemblyCatalog(assembly));
 
-            if (!string.IsNullOrEmpty(SiteRootPath))
+            if (!string.IsNullOrEmpty(_siteRootPath))
             {
-                WriteVerbose("Site root: " + SiteRootPath);
-                var pluginRoot = Path.Combine(SiteRootPath, "Plugins");
+                WriteVerbose("Site root: " + _siteRootPath);
+                var pluginRoot = Path.Combine(_siteRootPath, "Plugins");
 
                 if (Directory.Exists(pluginRoot))
                 {
@@ -49,7 +48,7 @@ namespace PowerSite
                 }
                 else
                 {
-                    WriteVerbose("No Plugins directory found in site root: " + SiteRootPath);
+                    WriteVerbose("No Plugins directory found in site root: " + _siteRootPath);
                 }
             }
             else
@@ -76,8 +75,8 @@ namespace PowerSite
 
         protected void ImportSiteConfig()
         {
-            AssertDirectoryExists(SiteRootPath, "SiteRootNotFound");
-            string configPath = Path.Combine(SiteRootPath, ConfigFile);
+            AssertDirectoryExists(_siteRootPath, "SiteRootNotFound");
+            string configPath = Path.Combine(_siteRootPath, ConfigFile);
 
             WriteVerbose("Importing Config File: " + configPath);
 
@@ -90,7 +89,7 @@ namespace PowerSite
                 ScriptBlock.Create(
                     string.Format(
                         "& 'Microsoft.PowerShell.Utility\\Import-LocalizedData' -BaseDirectory '{0}' -FileName '{1}'",
-                        SiteRootPath, ConfigFile));
+                        _siteRootPath, ConfigFile));
 
             // Import-LocalizedData returns PSObject even if you InvokeReturnAsIs
             // So the cleanest thing is to always look at the BaseObject
@@ -102,7 +101,7 @@ namespace PowerSite
                 ThrowTerminatingError(
                     new ErrorRecord(
                         new FileNotFoundException(
-                            string.Format("The site.config file is invalid at {0}", SiteRootPath)), "ConfigFileNotLoaded", ErrorCategory.InvalidData, SiteRootPath));
+                            string.Format("The site.config file is invalid at {0}", _siteRootPath)), "ConfigFileNotLoaded", ErrorCategory.InvalidData, _siteRootPath));
                 return;
             }
 
@@ -111,14 +110,14 @@ namespace PowerSite
                 Config.Author = LanguagePrimitives.ConvertTo<Author>(Config.Author);
             }
 
-            Config.BasePath = SiteRootPath;
-            Config.PagesPath = CreateIfNecessary(Path.Combine(SiteRootPath, "Pages"));
-            Config.PostsPath = CreateIfNecessary(Path.Combine(SiteRootPath, "Posts"));
-            Config.StaticPath = CreateIfNecessary(Path.Combine(SiteRootPath, "Static"));
-            Config.ThemesPath = CreateIfNecessary(Path.Combine(SiteRootPath, "Themes"));
-            Config.PluginsPath = CreateIfNecessary(Path.Combine(SiteRootPath, "Plugins"));
-            Config.OutputPath = CreateIfNecessary(Path.Combine(SiteRootPath, "Output"));
-            Config.CachePath = CreateIfNecessary(Path.Combine(SiteRootPath, "Cache"));
+            Config.BasePath = _siteRootPath;
+            Config.PagesPath = CreateIfNecessary(Path.Combine(_siteRootPath, "Pages"));
+            Config.PostsPath = CreateIfNecessary(Path.Combine(_siteRootPath, "Posts"));
+            Config.StaticPath = CreateIfNecessary(Path.Combine(_siteRootPath, "Static"));
+            Config.ThemesPath = CreateIfNecessary(Path.Combine(_siteRootPath, "Themes"));
+            Config.PluginsPath = CreateIfNecessary(Path.Combine(_siteRootPath, "Plugins"));
+            Config.OutputPath = CreateIfNecessary(Path.Combine(_siteRootPath, "Output"));
+            Config.CachePath = CreateIfNecessary(Path.Combine(_siteRootPath, "Cache"));
         }
 
         private string CreateIfNecessary(string path)
