@@ -58,6 +58,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\BaseMefCommand.cs" />
+    <Compile Include="DataModel\LayoutFile.cs" />
+    <Compile Include="Builtin\Renderers\ConvertPageCommand.cs" />
+    <Compile Include="Builtin\Theme.cs" />
     <Compile Include="DataModel\Author.cs" />
     <Compile Include="DataModel\IdentityCollection.cs" />
     <Compile Include="DataModel\Post.cs" />

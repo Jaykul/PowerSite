@@ -9,11 +9,11 @@ namespace PowerSite.DataModel
     }
 
 
-    public class IdentityCollection : KeyedCollection<string, IIdentityObject>
+    public class IdentityCollection<T> : KeyedCollection<string, T> where T : IIdentityObject
     {
-        public static IdentityCollection Create(IEnumerable<IIdentityObject> collection)
+        public static IdentityCollection<T> Create(IEnumerable<T> collection)
         {
-            var namedCollection = new IdentityCollection();
+            var namedCollection = new IdentityCollection<T>();
 
             foreach (var layout in collection)
             {
@@ -22,8 +22,8 @@ namespace PowerSite.DataModel
 
             return namedCollection;
         }
-
-        protected override string GetKeyForItem(IIdentityObject item)
+	
+        protected override string GetKeyForItem(T item)
         {
             return item.Id;
         }

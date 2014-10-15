@@ -7,129 +7,146 @@ using PowerSite.Actions;
 
 namespace PowerSite.DataModel
 {
-    public class Post : IIdentityObject
-    {
-        
-        public Post(string path, Author author)
-        {
-            SourcePath = path;
-            Id = path.Slugify();
+	public class Post : NamedContentBase
+	{
+		public Post(string path, Author author) : base(path)
+		{
+			if (Author == null)
+			{
+				Author = author;
+			}
+		}
 
-            using (var reader = new StreamReader(path))
-            {
-                string firstLine = ParseMetadataHeader(reader);
-                
-                if (Date == default(DateTime))
-                {
-                    var rawFile = new FileInfo(path);
-                    Date = rawFile.LastWriteTime;
-                }
+		public string Title { get; set; }
 
-                if (Author == null)
-                {
-                    Author = author;
-                }
+		public Author Author { get; set; }
 
-                Draft = path.ToLowerInvariant().Contains(".draft.");
+		public DateTime Date { get; set; }
 
-                RawContent = String.Concat(firstLine, "\n", reader.ReadToEnd()).Trim();
-            }
-        }
+		public string[] Tags { get; set; }
 
-        private static readonly Regex MetadataKeyValue = new Regex(@"^(?<key>\w+):\s?(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
+		public bool Draft { get; set; }
 
-        private string ParseMetadataHeader(StreamReader reader)
-        {
-            var preambleOpened = false;
-            var preambleSkipped = false;
-            string line;
+	}
 
-            Metadata = new PSObject();
+	public class NamedContentBase : IIdentityObject
+	{
+		public NamedContentBase(string path)
+		{
+			SourcePath = path;
+			Id = Path.GetFileNameWithoutExtension(path).Slugify();
+			Extension = (Path.GetExtension(path) ?? "md").Trim(new []{'.'});
 
-            while ((line = reader.ReadLine()) != null)
-            {
-                // Eat any blank lines or comments at the top of the document or in the header.
-                if (String.IsNullOrEmpty(line) || line.StartsWith("#") || line.StartsWith("//"))
-                {
-                    if (preambleSkipped) break;
-                    continue;
-                }
+			dynamic metadata = new PSObject(this);
+			RawContent = GetRawContent(path, ref metadata);
+		}
+		public string SourcePath { get; protected set; }
+		public string Id { get; set; }
+		public string Extension { get; set; }
+		public string RawContent { get; protected set; }
+		public string RenderedContent { get; set; }
+		public dynamic Metadata { get; set; }
 
-                if (line.Equals("---"))
-                {
-                    line = string.Empty;
-                    // if we already parsed metadata, then when we see ---, we're done
-                    if (preambleOpened || preambleSkipped) break;
-                    preambleOpened = true;
-                    continue;
-                }
+		private static readonly Regex MetadataKeyValue = new Regex(@"^(?<key>\w+):\s?(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
 
-                var match = MetadataKeyValue.Match(line);
-                if (match.Success)
-                {
-                    preambleSkipped = !preambleOpened;
+		public static string GetRawContent(string path, ref dynamic metadata)
+		{
+			var preambleOpened = false;
+			var preambleSkipped = false;
+			var saveMetadata = metadata != null;
+			
+			if (saveMetadata)
+			{
+				try
+				{
+					metadata.Draft = path.ToLowerInvariant().Contains(".draft.");
+					metadata.Metadata = new PSObject();
+				}
+				catch
+				{
+					saveMetadata = false;
+				}
+			}
 
-                    string key = match.Groups[1].Value.ToLowerInvariant();
-                    string value = match.Groups[2].Value.Trim();
-                    switch (key)
-                    {
-                        case "date":
-                            DateTime date;
-                            if (!DateTime.TryParse(value, out date))
-                            {
-                                date = DateTime.MinValue;
-                            }
-                            Date = date;
-                            break;
+			using (var reader = new StreamReader(path))
+			{
+				string line;
 
-                        case "title":
-                            Title = value;
-                            break;
+				while ((line = reader.ReadLine()) != null)
+				{
+					// Eat any blank lines or comments at the top of the document or in the header.
+					if (String.IsNullOrEmpty(line) || line.StartsWith("#") || line.StartsWith("//"))
+					{
+						if (preambleSkipped) break;
+						continue;
+					}
 
-                        case "author":
-                            Author = LanguagePrimitives.ConvertTo<Author>(value);
-                            break;
+					if (line.Equals("---"))
+					{
+						line = String.Empty;
+						// if we already parsed metadata, then when we see ---, we're done
+						if (preambleOpened || preambleSkipped) break;
+						preambleOpened = true;
+						continue;
+					}
 
-                        case "tag":
-                        case "tags":
-                            var tags = value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                                .Select(t => t.Trim()).Where(t => !String.IsNullOrEmpty(t)).ToArray();
+					var match = MetadataKeyValue.Match(line);
+					if (match.Success)
+					{
+						preambleSkipped = !preambleOpened;
+					
+						if (saveMetadata)
+						{
+							string key = match.Groups[1].Value.ToLowerInvariant();
+							string value = match.Groups[2].Value.Trim();
+							switch (key)
+							{
+								case "date":
+									DateTime date;
+									if (!DateTime.TryParse(value, out date))
+									{
+										date = DateTime.MinValue;
+									}
+									metadata.Date = date;
+									break;
 
-                            Tags = tags;
-                            break;
+								case "title":
+									metadata.Title = value;
+									break;
 
-                        default:
-                            ((PSObject)Metadata).Properties.Add(new PSNoteProperty(key,value));
-                            break;
-                    }
-                }
-                else if (!preambleOpened) // no preamble, non-matches mean we're done with the header.
-                {
-                    break;
-                }
-            }
+								case "author":
+									metadata.Author = LanguagePrimitives.ConvertTo<Author>(value);
+									break;
 
-            return line;
-        }
+								case "tag":
+								case "tags":
+									var tags = value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+										.Select(t => t.Trim()).Where(t => !String.IsNullOrEmpty(t)).ToArray();
 
-        public string SourcePath { get; private set; }
+									metadata.Tags = tags;
+									break;
 
-        public string Id { get; set; }
-        public string Title { get; set; }
+								default:
+									((PSObject)metadata.Metadata).Properties.Add(new PSNoteProperty(key, value));
+									break;
+							}
+						}
+					}
+					else if (!preambleOpened) // no preamble, non-matches mean we're done with the header.
+					{
+						break;
+					}
+				}
 
-        public Author Author { get; set; }
+				if (saveMetadata && metadata.Date == default(DateTime))
+				{
+					var rawFile = new FileInfo(path);
+					metadata.Date = rawFile.LastWriteTime;
+				}
 
-        public DateTime Date { get; set; }
+				return String.Concat(line, "\n", reader.ReadToEnd()).Trim();
+			}
 
-        public string[] Tags { get; set; }
-
-        public bool Draft { get; set; }
-
-        public dynamic Metadata { get; set; }
-
-        public string RawContent { get; private set; }
-
-        public string RenderedContent { get; set; }
-
-    }
+		}
+	}
 }

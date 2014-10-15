@@ -1,69 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PowerSite.Builtin;
+using PowerSite.DataModel;
 
 namespace PowerSite
 {
-    public class RenderingState: IDisposable
-    {
-            private bool _disposed = false;
+	public class RenderingState : IDisposable
+	{
+		private bool _disposed = false;
+		
+		[ImportMany]
+		protected IEnumerable<Lazy<IRenderer, IExtension>> Engines;
+		
+		public RenderingState(IPoshSite site)
+		{
+			if (RenderingState.Current != null)
+			{
+				throw new InvalidOperationException("Can only have one rendering transaction active at a time. Ensure the previous rendering transaction was disposed before creating this one.");
+			}
 
-            public RenderingState(IDictionary<string, RenderingEngine> engines, PoshSite site)
-            {
-                if (RenderingState.Current != null)
-                {
-                    throw new InvalidOperationException("Can only have one rendering transaction active at a time. Ensure the previous rendering transaction was disposed before creating this one.");
-                }
+			this.Site = site;
+			this.Layouts = site.Theme.Layouts;
 
-                this.Engines = engines;
-                this.Site = site;
-                //this.Documents = site.Documents;
-                //this.Files = site.Files;
-                //this.Layouts = site.Layouts;
+			RenderingState.Current = this;
+		}
 
-                RenderingState.Current = this;
-            }
+		public static RenderingState Current { get; set; }
 
-            public static RenderingState Current { get; set; }
+		public IPoshSite Site { get; set; }
+	
+	
+		//public IEnumerable<DocumentFile> Documents { get; set; }
 
-            public IDictionary<string, RenderingEngine> Engines { get; set; }
+		//public IEnumerable<StaticFile> Files { get; set; }
 
-            public PoshSite Site { get; set; }
+		public IdentityCollection<LayoutFile> Layouts { get; set; }
 
-            //public IEnumerable<DocumentFile> Documents { get; set; }
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 
-            //public IEnumerable<StaticFile> Files { get; set; }
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
 
-            //public LayoutFileCollection Layouts { get; set; }
+			if (disposing)
+			{
+				if (RenderingState.Current == this)
+				{
+					RenderingState.Current = null;
+				}
+			}
 
-            public void Dispose()
-            {
-                this.Dispose(true);
-                GC.SuppressFinalize(this);
-            }
+			_disposed = true;
+		}
+	}
 
-            protected virtual void Dispose(bool disposing)
-            {
-                if (_disposed)
-                {
-                    return;
-                }
-
-                if (disposing)
-                {
-                    if (RenderingState.Current == this)
-                    {
-                        RenderingState.Current = null;
-                    }
-                }
-
-                _disposed = true;
-            }
-    }
-
-    public class RenderingEngine
-    {
-    }
+	public class RenderingEngine
+	{
+	}
 }

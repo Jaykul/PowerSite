@@ -17,7 +17,7 @@ namespace PowerSite
         /// <param name="template">Template to render.</param>
         /// <param name="data">Data provided to template.</param>
         /// <returns>Rendered template content.</returns>
-        string Render(string template, object data);
+        string Render(string template, dynamic data);
     }
 
     public interface IExtension
