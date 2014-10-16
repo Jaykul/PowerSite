@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using PowerSite.DataModel;
 
-namespace PowerSite.Builtin
+namespace PowerSite.DataModel
 {
 	public class Theme
 	{

@@ -7,9 +7,9 @@ using PowerSite.Actions;
 
 namespace PowerSite.DataModel
 {
-	public class Post : NamedContentBase
+	public class Document : NamedContentBase
 	{
-		public Post(string path, Author author) : base(path)
+		public Document(string path, Author author) : base(path)
 		{
 			if (Author == null)
 			{

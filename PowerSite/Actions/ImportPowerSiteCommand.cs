@@ -51,12 +51,13 @@ namespace PowerSite.Actions
 			Config.Posts = LoadPages(Config.PostsPath);
 			Config.Theme.Load();
 
+			RenderingState.Initialize(Config);
 			WriteObject(Config);
 		}
-
-		protected IdentityCollection<Post> LoadPages(string path)
+	
+		protected IdentityCollection<Document> LoadPages(string path)
 		{
-			return IdentityCollection<Post>.Create(Directory.EnumerateFiles(path).Select(f => new Post(f, Config.Author)));
+			return IdentityCollection<Document>.Create(Directory.EnumerateFiles(path).Select(f => new Document(f, Config.Author)));
 		}
 	}
 }

@@ -60,28 +60,57 @@
   <ItemGroup>
     <Compile Include="Actions\BaseMefCommand.cs" />
     <Compile Include="DataModel\LayoutFile.cs" />
-    <Compile Include="Builtin\Renderers\ConvertPageCommand.cs" />
-    <Compile Include="Builtin\Theme.cs" />
+    <Compile Include="Actions\ConvertPageCommand.cs" />
+    <Compile Include="DataModel\Theme.cs" />
     <Compile Include="DataModel\Author.cs" />
     <Compile Include="DataModel\IdentityCollection.cs" />
-    <Compile Include="DataModel\Post.cs" />
+    <Compile Include="DataModel\Document.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Builtin\Renderers\MarkdownRenderer.cs" />
     <Compile Include="Builtin\Renderers\RazorRenderer.cs" />
     <Compile Include="Actions\ImportPowerSiteCommand.cs" />
-    <Compile Include="PoshSite.cs" />
     <Compile Include="Actions\BasePowerSiteCommand.cs" />
     <Compile Include="IRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenderingState.cs" />
+    <Compile Include="DataModel\RenderingState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="ReadMe.md" />
     <None Include="Samples\Blog\config.psd1" />
     <None Include="Samples\Blog\Posts\a-fresh-start.md" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap-theme.css.map" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap.css.map" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.eot" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.ttf" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\header.cshtml" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\post.cshtml" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\script-footer.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\404.html" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\apple-touch-icon-precomposed.png" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\blog.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap-theme.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap-theme.min.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap.min.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\main.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\favicon.ico" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\main.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\bootstrap.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\bootstrap.min.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\jquery-1.11.1.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\jquery-1.11.1.min.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\modernizr-2.6.2-respond-1.1.0.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Samples\Blog\Pages\" />
+    <Folder Include="Samples\Blog\Static\" />
+    <Folder Include="Samples\Blog\Themes\BootstrapBlog\img\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

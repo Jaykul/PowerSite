@@ -14,7 +14,7 @@ namespace PowerSite.Builtin.Renderers
 	[ExportMetadata("Extension", "cshtml")]
 	public class RazorRenderer : IRenderer
 	{
-		public string Render(string template, object data)
+		public string Render(string template, dynamic data)
 		{
 			string result = null;
 
@@ -31,6 +31,11 @@ namespace PowerSite.Builtin.Renderers
 
 				try
 				{
+					var pso = data as PSObject;
+					if (pso != null)
+					{
+						data = pso.BaseObject;
+					}
 					result = Razor.Parse(template, data, cacheName);
 				}
 				catch (TemplateCompilationException e)
@@ -53,14 +58,31 @@ namespace PowerSite.Builtin.Renderers
 			
 				var extension = (Path.GetExtension(name) ?? ".cshtml").TrimStart('.');
 
-				var layout = RenderingState.Current.Layouts[id];
+				var layout = RenderingState.Current.Theme.Layouts[id];
 			
 				if (!layout.Extension.Equals(String.IsNullOrEmpty(extension) ? "cshtml" : extension, StringComparison.OrdinalIgnoreCase))
 				{
-					Console.WriteLine("Resolved wrong. Layout {0} extention {1}", name, extension);
+					Console.WriteLine("Resolved wrong. Layout {0} extension {1}", name, extension);
 				}
 				return layout.RawContent;
 			}
 		}
+	}
+
+	public class RazorTemplate<T> : TemplateBase<T>
+	{
+
+	}
+
+	public class RenderModel
+	{
+		public RenderModel(Document document)
+		{
+			Document = document;
+			Site = RenderingState.Current.Config;
+		}
+	
+		public Document Document { get; set; }
+		public dynamic Site { get; set; }
 	}
 }
