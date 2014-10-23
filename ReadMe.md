@@ -9,9 +9,9 @@ There's a bunch of conventions and configuration that go into a site. The follow
     \posts
         For a blog, blog posts go in this folder
     \pages
-        Pages that aren't blog posts go here (and have a "path" metadata property)
+        Pages that aren't blog posts go here (and output in their relative path to the site)
     \static
-        Static content like images and downloads go here, and will be uploaded to the site without processing.
+        Static content like images and downloads go here, and will be uploaded (in their relative path) to the site without processing.
     \themes
         All the layout templates, javascripts and styles for the themes go here (see below for a discussion of how these work)
     \plugins
@@ -85,8 +85,8 @@ Each folder in the Themes subfolder is a theme, and the active theme is selected
 Subfolders in each theme are output to the site preserving paths, and files which need processing are processed
 (currently we only support razor templates, but we should add mustache, as well as non-template langauages like less and sass).
 
-The core template files are the output types: "post" and "page" as well as "index" for lists and "feed" for rss/atom feeds.
-The index and feed templates are generated for the whole site, and for each tag and author.
+The core template files are the output types: "post" and "page" as well as "archive" for lists and "feed" for rss/atom feeds.
+The index (and feed: **todo**) templates are generated for the whole site, (and for each tag and author: **todo**).
 
 Any additional template files are used only for includes in the core templates.  
 Font and image files, as well as css and js are output untouched (preserving paths).
