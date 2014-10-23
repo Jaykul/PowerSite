@@ -30,13 +30,13 @@ Types of Content
 
 There are three types of content in PowerSite:
 
-==== Static Content
+### Static Content ###
 
 Static content are the files in the \static folder and it's subfolders, which are copied directly to the output, preserving paths. 
 You can put anything in here that you like, but the traditional use is to put create folders for images, downloads, etc.
 
 
-==== Pages
+### Pages ###
 
 Pages are the files in the `\pages` folder and it's subfolders. 
 
@@ -50,7 +50,7 @@ you should put them in `\static`  -- the pages content allows you to create abso
 you want for your site in the pages, while still getting the benefit of markdown and layout templates.
 
 
-==== Posts
+### Posts ###
 
 Posts are the blog post files in the `\posts` folder.  There's no support for subfolders here, so each post must have a unique name.
 These are usually markdown files which are processed by the renderer and then wrapped in the "post" layout template.  
