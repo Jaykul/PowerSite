@@ -1,0 +1,24 @@
+﻿@using PowerSite.DataModel
+<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	<div class="sidebar-module">
+		<h4>Joel Bennett</h4>
+		<p>Also known as "Jaykul" around the internet, I am a software engineer, a Microsoft MVP for PowerShell, and this is where I blog about PowerShell and software development, about technology, the web, and the world.</p>
+	</div>
+	<div class="sidebar-module well">
+		<h4>Tags</h4>
+		<ol class="list-inline">
+			@foreach (var tag in Site.Current.Tags.Keys)
+			{
+				<li><a href="/blogs/tags/@tag">@tag</a></li>
+			}
+		</ol>
+	</div>
+	<div class="sidebar-module well">
+		<div id="diigo_linkroll">
+		<script type="text/javascript" src="//www.diigo.com/roll2/linkrolls?v=4&username=jaykul&count=5&style=customize&icon=false&desc=1&l_type=0&t_color=3498db&t_fam=Lato,Helvetica Neue,Helvetica,Arial,sans-serif&t_size=14&t_bold=true&t_italic=false&t_underline=false&i_fam=Lato,Helvetica Neue,Helvetica,Arial,sans-serif&i_color=ffffff&i_size=12&i_bold=false&i_italic=false&i_underline=false&bg_color=00222222&bg_repeat=no-repeat&title=I%20diigo%20these%20links&tags=&bg_img="></script></div>
+	</div>
+	<div class="sidebar-module well" >
+		<a class="twitter-timeline" href="https://twitter.com/Jaykul" height="700" data-widget-id="484816047145369600" data-chrome="transparent noscrollbar">Tweets by @@Jaykul</a>
+		<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+	</div>
+</div>

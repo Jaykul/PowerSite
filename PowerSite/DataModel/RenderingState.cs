@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using PowerSite.Actions;
 using PowerSite.Builtin;
 
 namespace PowerSite.DataModel
@@ -25,7 +26,7 @@ namespace PowerSite.DataModel
 		{
 			"Pages","Posts","Theme","ThemesPath","Title"
 		};
-		public static void Initialize(dynamic config)
+		public static void Initialize(PowerSiteHelper config)
 		{
 			Current = new RenderingState
 			{

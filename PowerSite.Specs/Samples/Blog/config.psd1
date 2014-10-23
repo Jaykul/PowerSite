@@ -4,6 +4,7 @@
 	# You simply need to provide a copy with the specific file name pattern:
 	#	FileName.lang.ext
 
+	# Please see the ReadMe for more complete documentation of the settings...
 	Author = @{
 		Id = 'Jaykul'
 		Name = 'Joel "Jaykul" Bennett'
@@ -13,11 +14,12 @@
 
 	# This is the main URL for your site. It will be used in a prominent link
 	RootUrl = "http://HuddledMasses.org/"
-	# This is the root URL where blog posts will be placed
-	# If not set, defaults to RootUrl
-	# The idea is that you can have a PAGES\index.md that renders to RootUrl\index.html
-	# But then the POSTS\ can render to a subdirectory, say "/blog"
-	BlogUrl = "blog/"
+
+	# This is the path where blog posts will be placed, below the RootUel
+	# If not set, it defaults to empty, which is just fine for a blog, but if
+	# if you want to also have static pages, and not worry about confusing the paths,
+	# just set this path to something like "blog/"
+	BlogPath = "blog/"
 
 	# Data about this site
 	Title = "Huddled Masses"	# (translatable)
@@ -26,6 +28,14 @@
 	# This controls which set of layout templates will be used
 	Theme = "BootstrapBlog"
 
+	# The rest of these settings are entirely optional:
+
+	# Instead of saving files as BlogUrl/<slug>.html, store them in BlogUrl/<slug>/index.html
+	# Generates links to BlogUrl/<slug>, make sure "index.html" is your site's default document.
+	PrettyUrl = $True
+
+	# Controls how many posts are rendered on each index page
+	PostsPerArchivePage = 5
 ####################
 ### SETTINGS BELOW THIS ARE WISHFUL THINKING
 ####################
@@ -34,7 +44,6 @@
 	DefaultCulture = "En-US"
 	# Translations = "Es", "De"
 
-	# The rest of these settings are entirely optional:
 
 	# Post's dates use UTC by default, if you want to use a different timezone,
 	# Specify the name here:

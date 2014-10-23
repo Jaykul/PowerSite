@@ -1,70 +1,65 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Management.Automation;
-using PowerSite.Actions;
 using PowerSite.DataModel;
 
-namespace PowerSite.Builtin.Renderers
+namespace PowerSite.Actions
 {
 	[Cmdlet(VerbsData.Convert, "Page")]
-	public class ConvertPageCommand : BaseMefCommand
+	public class ConvertPageCommand : PSCmdlet
 	{
-		[ImportMany]
-		protected IEnumerable<Lazy<IRenderer, IExtension>> Engines;
-	
 		[Parameter(Position = 0, ValueFromPipelineByPropertyName = true, ValueFromPipeline = true, ParameterSetName = "FromPath")]
 		[Alias("PSPath")]
 		public string Path { get; set; }
 	
 		[Parameter()]
 		[Alias("Root")]
-		public string SiteRootPath
-		{
-			get { return _siteRootPath; }
-			set { _siteRootPath = value; }
-		}
-
+		public string SiteRootPath { get; set; }
+	
 		[Parameter(Position = 0, ValueFromPipeline = true, ParameterSetName = "FromPost")]
 		public NamedContentBase Markup { get; set; }
 
 		[Parameter()]
 		public PSObject Data { get; set; }
 
-		protected override void InitializePluginCatalog(string path)
+		private string GetPluginPath(string path)
 		{
+			if (SiteRootPath != null) 
+				return SiteRootPath;
+		
 			ProviderInfo providerInfo;
 			// Path is something like siteRoot\Posts\File.md
 			// and after this, _siteRootPath is siteRoot\Posts
 			path = System.IO.Path.GetDirectoryName(path);
 			// and after this, _siteRootPath is siteRoot\
-			_siteRootPath = System.IO.Path.GetDirectoryName(path);
-			_siteRootPath = GetResolvedProviderPathFromPSPath(_siteRootPath, out providerInfo).FirstOrDefault();
-			_isPluggedIn = true;
-			base.InitializePluginCatalog(_siteRootPath);
+			SiteRootPath = System.IO.Path.GetDirectoryName(path);
+			SiteRootPath = GetResolvedProviderPathFromPSPath(SiteRootPath, out providerInfo).FirstOrDefault();
+			return SiteRootPath;
 		}
 
-		private bool _isPluggedIn;
+		private Site helper;
 
 		protected override void ProcessRecord()
 		{
 			if (ParameterSetName == "FromPath")
 			{
-				if (!_isPluggedIn) InitializePluginCatalog(Path);
+				if (helper == null)
+					helper = new Site(GetPluginPath(Path)); 
+			
 				ProviderInfo providerInfo;
 				var files = GetResolvedProviderPathFromPSPath(Path, out providerInfo);
 				foreach (var file in files)
 				{
-					Markup = new NamedContentBase(file);
-					var renderer = Engines.First(i => i.Metadata.Extension.Equals(Markup.Extension)).Value;
+					Markup = new NamedContentBase(file, true);
+					var renderer = helper.Engines.First(i => i.Metadata.Extension.Equals(Markup.Extension)).Value;
 					WriteObject(renderer.Render(Markup.RawContent, Data));
 				}
 			}
 			else
 			{
-				if (!_isPluggedIn) InitializePluginCatalog(Markup.SourcePath);
-				var renderer = Engines.First(i => i.Metadata.Extension.Equals(Markup.Extension)).Value;
+				if (helper == null)
+					helper = new Site(GetPluginPath(Markup.SourcePath));
+
+				var renderer = helper.Engines.First(i => i.Metadata.Extension.Equals(Markup.Extension)).Value;
 				Markup.RenderedContent = renderer.Render(Markup.RawContent, Data);
 				WriteObject(Markup);
 			}

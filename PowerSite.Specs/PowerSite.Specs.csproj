@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{61D72176-9C50-4D38-B6AC-91A19E197C26}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PowerSite.Specs</RootNamespace>
+    <AssemblyName>PowerSite.Specs</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="RazorEngine, Version=3.4.1.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RazorEngine.3.4.1\lib\net45\RazorEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TechTalk.SpecFlow">
+      <HintPath>..\packages\SpecFlow.1.9.0\lib\net35\TechTalk.SpecFlow.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit">
+      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.extensions">
+      <HintPath>..\packages\xunit.extensions.1.9.2\lib\net20\xunit.extensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="ConfigParsing.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ConfigParsing.feature</DependentUpon>
+    </Compile>
+    <Compile Include="ConfigParsingSteps.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\blog-sidebar.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="ConfigParsing.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ConfigParsing.feature.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Samples\Blog\config.psd1" />
+    <None Include="Samples\Blog\Pages\index.cshtml" />
+    <None Include="Samples\Blog\Posts\a-fresh-start.md" />
+    <None Include="Samples\Blog\Posts\about huddled masses.md" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap-theme.css.map" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap.css.map" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.eot" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.ttf" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\header.cshtml" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\page.cshtml" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\post.cshtml" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\script-footer.cshtml" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\archive.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\404.html" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\apple-touch-icon-precomposed.png" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\blog.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap-theme.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap-theme.min.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\bootstrap.min.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\css\main.css" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\favicon.ico" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\main.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\bootstrap.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\bootstrap.min.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\jquery-1.11.1.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\jquery-1.11.1.min.js" />
+    <Content Include="Samples\Blog\Themes\BootstrapBlog\js\vendor\modernizr-2.6.2-respond-1.1.0.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Samples\Blog\Static\" />
+    <Folder Include="Samples\Blog\Themes\BootstrapBlog\img\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PowerSite\PowerSite.csproj">
+      <Project>{4a8f250c-3a76-423d-883b-cec3687895e7}</Project>
+      <Name>PowerSite</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

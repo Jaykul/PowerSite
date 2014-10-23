@@ -1,0 +1,6 @@
+﻿.md
+.cshtml
+.less
+.scss
+.ts
+.coffee

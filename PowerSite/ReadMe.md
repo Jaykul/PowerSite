@@ -52,18 +52,9 @@ you want for your site in the pages, while still getting the benefit of markdown
 
 ==== Posts
 
-Posts are the files in the `\posts` folder.  There's no support for subfolders here.  
+Posts are the blog post files in the `\posts` folder.  There's no support for subfolders here, so each post must have a unique name.
 These are usually markdown files which are processed by the renderer and then wrapped in the "post" layout template.  
-The output location is based on the configuration, and starts with the RootUrl + BlogUrl,
-and then a formatted string with support for various tokens:
-
-	${year}		-- the four-digit year
-	${month}		-- always zero padded month number
-	${day}		-- always zero padded day number
-	${time}		-- this is the hh:mm string
-	${category}	-- this is the first tag
-	${author}	-- the author name
-	${title}		-- the post title
+The output location is calculated as RootUrl + BlogUrl + Slug, where the slug is calculated from the file name by removing 
 
 Writing a Page or a Post
 ------------------------

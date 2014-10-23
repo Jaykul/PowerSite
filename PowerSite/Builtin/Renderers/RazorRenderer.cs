@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Management.Automation;
+using PowerSite.Actions;
 using PowerSite.DataModel;
 using RazorEngine;
 using RazorEngine.Configuration;
@@ -58,7 +59,7 @@ namespace PowerSite.Builtin.Renderers
 			
 				var extension = (Path.GetExtension(name) ?? ".cshtml").TrimStart('.');
 
-				var layout = RenderingState.Current.Theme.Layouts[id];
+				var layout = DataModel.Site.Current.Theme.Layouts[id];
 			
 				if (!layout.Extension.Equals(String.IsNullOrEmpty(extension) ? "cshtml" : extension, StringComparison.OrdinalIgnoreCase))
 				{
@@ -69,20 +70,4 @@ namespace PowerSite.Builtin.Renderers
 		}
 	}
 
-	public class RazorTemplate<T> : TemplateBase<T>
-	{
-
-	}
-
-	public class RenderModel
-	{
-		public RenderModel(Document document)
-		{
-			Document = document;
-			Site = RenderingState.Current.Config;
-		}
-	
-		public Document Document { get; set; }
-		public dynamic Site { get; set; }
-	}
 }

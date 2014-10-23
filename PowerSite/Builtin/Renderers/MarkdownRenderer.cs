@@ -4,29 +4,28 @@ using PowerSite.DataModel;
 
 namespace PowerSite.Builtin.Renderers
 {
-    using System.ComponentModel.Composition;
+	using System.ComponentModel.Composition;
 
-    using MarkdownSharp;
+	using MarkdownSharp;
 
-    [Export(typeof(IRenderer))]
-    [ExportMetadata("Extension", "md")]
-    [Cmdlet(VerbsData.ConvertFrom, "Markdown")]
+	[Export(typeof(IRenderer))]
+	[ExportMetadata("Extension", "md")]
+	[Cmdlet(VerbsData.ConvertFrom, "Markdown")]
 
-    public class MarkdownRenderer : IRenderer
-    {
+	public class MarkdownRenderer : IRenderer
+	{
 
-        public MarkdownRenderer()
-        {
-            MarkdownEngine = new Markdown(new MarkdownOptions() { AutoHyperlink = true });
-        }
+		public MarkdownRenderer()
+		{
+			MarkdownEngine = new Markdown(new MarkdownOptions() { AutoHyperlink = true });
+		}
 
-        private Markdown MarkdownEngine { get; set; }
+		private Markdown MarkdownEngine { get; set; }
 
-        public string Render(string template, dynamic data = null)
-        {
-            var result = MarkdownEngine.Transform(template).Trim();
-
-            return result;
-        }
-    }
+		public string Render(string template, dynamic data = null)
+		{
+			var engine = new Markdown(new MarkdownOptions() { AutoHyperlink = true });
+			return engine.Transform(template).Trim();
+		}
+	}
 }

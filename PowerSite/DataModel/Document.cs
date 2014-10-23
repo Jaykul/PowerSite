@@ -9,7 +9,7 @@ namespace PowerSite.DataModel
 {
 	public class Document : NamedContentBase
 	{
-		public Document(string path, Author author) : base(path)
+		public Document(string path, Author author, bool preLoadContent=false) : base(path, preLoadContent)
 		{
 			if (Author == null)
 			{
@@ -27,48 +27,87 @@ namespace PowerSite.DataModel
 
 		public bool Draft { get; set; }
 
+		private string _summary;
+		public string Summary {
+			get
+			{
+				if (_summary == null)
+				{
+					Match match = Regex.Match(RenderedContent, "<p>.*?</p>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+					if (match.Success && match.Value != RenderedContent)
+					{
+						_summary = match.Value;
+					}
+				}
+
+				return _summary;
+			}
+		}
 	}
 
 	public class NamedContentBase : IIdentityObject
 	{
-		public NamedContentBase(string path)
+		public NamedContentBase(string path, bool preloadContent = false)
 		{
 			SourcePath = path;
 			Id = Path.GetFileNameWithoutExtension(path).Slugify();
 			Extension = (Path.GetExtension(path) ?? "md").Trim(new []{'.'});
-
-			dynamic metadata = new PSObject(this);
-			RawContent = GetRawContent(path, ref metadata);
+			LoadFile(true, preloadContent);
 		}
+	
 		public string SourcePath { get; protected set; }
 		public string Id { get; set; }
 		public string Extension { get; set; }
-		public string RawContent { get; protected set; }
+
+		private string _rawContent;
+		public string RawContent
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_rawContent))
+				{
+					LoadRawContent();
+				}
+				return _rawContent;
+			}
+			private set { _rawContent = value; }
+		}
+
 		public string RenderedContent { get; set; }
 		public dynamic Metadata { get; set; }
+		public string RelativeUrl { get; set; }
 
 		private static readonly Regex MetadataKeyValue = new Regex(@"^(?<key>\w+):\s?(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
 
-		public static string GetRawContent(string path, ref dynamic metadata)
+		protected void LoadRawContent()
+		{
+			LoadFile(false, true);
+		}
+
+		protected void LoadMetadata()
+		{
+			LoadFile(true, false);
+		}
+	
+		private void LoadFile(bool keepMetadata, bool keepContent)
 		{
 			var preambleOpened = false;
 			var preambleSkipped = false;
-			var saveMetadata = metadata != null;
-			
-			if (saveMetadata)
+			dynamic o = new PSObject(this);
+			if (keepMetadata)
 			{
 				try
 				{
-					metadata.Draft = path.ToLowerInvariant().Contains(".draft.");
-					metadata.Metadata = new PSObject();
+					o.Draft = SourcePath.ToLowerInvariant().Contains(".draft.");
+					o.Metadata = new PSObject();
 				}
 				catch
 				{
-					saveMetadata = false;
+					keepMetadata = false;
 				}
 			}
-
-			using (var reader = new StreamReader(path))
+		
+			using (var reader = new StreamReader(SourcePath))
 			{
 				string line;
 
@@ -94,8 +133,8 @@ namespace PowerSite.DataModel
 					if (match.Success)
 					{
 						preambleSkipped = !preambleOpened;
-					
-						if (saveMetadata)
+
+						if (keepMetadata)
 						{
 							string key = match.Groups[1].Value.ToLowerInvariant();
 							string value = match.Groups[2].Value.Trim();
@@ -105,17 +144,17 @@ namespace PowerSite.DataModel
 									DateTime date;
 									if (!DateTime.TryParse(value, out date))
 									{
-										date = DateTime.MinValue;
+										date = default(DateTime);
 									}
-									metadata.Date = date;
+									o.Date = date;
 									break;
 
 								case "title":
-									metadata.Title = value;
+									o.Title = value;
 									break;
 
 								case "author":
-									metadata.Author = LanguagePrimitives.ConvertTo<Author>(value);
+									o.Author = LanguagePrimitives.ConvertTo<Author>(value);
 									break;
 
 								case "tag":
@@ -123,11 +162,11 @@ namespace PowerSite.DataModel
 									var tags = value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
 										.Select(t => t.Trim()).Where(t => !String.IsNullOrEmpty(t)).ToArray();
 
-									metadata.Tags = tags;
+									o.Tags = tags;
 									break;
 
 								default:
-									((PSObject)metadata.Metadata).Properties.Add(new PSNoteProperty(key, value));
+									((PSObject)o.Metadata).Properties.Add(new PSNoteProperty(key, value));
 									break;
 							}
 						}
@@ -138,13 +177,21 @@ namespace PowerSite.DataModel
 					}
 				}
 
-				if (saveMetadata && metadata.Date == default(DateTime))
+				if (keepMetadata)
 				{
-					var rawFile = new FileInfo(path);
-					metadata.Date = rawFile.LastWriteTime;
+					if (o.Date == default(DateTime))
+					{
+						o.Date = File.GetLastWriteTime(SourcePath);
+					}
+					Metadata = o;
 				}
 
-				return String.Concat(line, "\n", reader.ReadToEnd()).Trim();
+
+				if (keepContent)
+				{
+					RawContent = String.Concat(line, "\n", reader.ReadToEnd()).Trim();
+				}
+				
 			}
 
 		}

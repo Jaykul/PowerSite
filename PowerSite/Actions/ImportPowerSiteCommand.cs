@@ -11,12 +11,12 @@ namespace PowerSite.Actions
 	[Cmdlet(VerbsData.Import, "PowerSite")]
 	public class ImportPowerSiteCommand : BasePowerSiteCommand
 	{
-		[Parameter(ParameterSetName = "FromConfiguration")]
-		public PSObject Configuration
-		{
-			get { return base.Config; }
-			set { base.Config = value; }
-		}
+		//[Parameter(ParameterSetName = "FromConfiguration")]
+		//public PSObject Configuration
+		//{
+		//	get { return base.Config; }
+		//	set { base.Config = value; }
+		//}
 
 		[Parameter(ParameterSetName = "FromPath")]
 		[Alias("PSPath", "Path", "Root")]
@@ -41,23 +41,13 @@ namespace PowerSite.Actions
 				}
 				base.BeginProcessing();
 			}
-			InitializePluginCatalog(_siteRootPath);
 		}
 
 		protected override void ProcessRecord()
 		{
 			// base.BeginProcessing asserts the existence of our root, se we can just parse away
-			Config.Pages = LoadPages(Config.PagesPath);
-			Config.Posts = LoadPages(Config.PostsPath);
-			Config.Theme.Load();
-
-			RenderingState.Initialize(Config);
-			WriteObject(Config);
-		}
-	
-		protected IdentityCollection<Document> LoadPages(string path)
-		{
-			return IdentityCollection<Document>.Create(Directory.EnumerateFiles(path).Select(f => new Document(f, Config.Author)));
+			_helper.LoadDocuments();
+			WriteObject(_helper);
 		}
 	}
 }
