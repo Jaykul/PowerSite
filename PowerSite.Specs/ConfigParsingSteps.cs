@@ -114,7 +114,19 @@ namespace PowerSite.Specs
 		[Then(@"I get actual pages")]
 		public void ThenIGetActualPages()
 		{
-			ScenarioContext.Current.Pending();
+			var root = ScenarioContext.Current.Get<string>("SiteRoot");
+			var blog = ScenarioContext.Current.Get<DataModel.Site>("Site").BlogPath;
+			blog = Path.Combine(root, "Cache", blog);
+
+			foreach (var post in new[] {"a-fresh-start/index.html", "about-huddled-masses/index.html"}.Select(post => Path.Combine(blog, post)))
+			{
+				Assert.True(File.Exists(post), string.Format("Blog post '{0}' does not exist.", post));
+			}
+		
+			foreach (var page in new[] {"index.html"}.Select(page => Path.Combine(blog, page)))
+			{
+				Assert.True(File.Exists(page), string.Format("Web page '{0}' does not exist.", page));
+			}
 		}
 
 	}
