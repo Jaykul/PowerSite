@@ -68,8 +68,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Samples\Blog\Posts\missing-content.md" />
     <None Include="Samples\Blog\Posts\validating-self-signed-certificates-properly-from-powershell.md" />
-    <None Include="Samples\Blog\Themes\BootstrapBlog\BlogLayout.cshtml" />
-    <None Include="Samples\Blog\Themes\BootstrapBlog\SiteLayout.cshtml" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\BlogLayout.cshtml">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="Samples\Blog\Themes\BootstrapBlog\SiteLayout.cshtml">
+      <SubType>Code</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

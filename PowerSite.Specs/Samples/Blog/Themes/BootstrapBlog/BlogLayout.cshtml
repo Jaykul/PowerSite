@@ -1,0 +1,117 @@
+﻿@using PowerSite.DataModel
+@inherits  RazorEngine.Templating.TemplateBase<dynamic>
+@{
+	ViewBag.Active = "blog";
+}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="@Site.Current.Description">
+	<meta name="author" content="@ViewBag.Author">
+	<title>@ViewBag.Title</title>
+
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<style>
+		body {
+			padding-top: 50px;
+			padding-bottom: 20px;
+		}
+	</style>
+	<link rel="stylesheet" href="/css/blog.css">
+	<link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+	<script src="/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+	@RenderSection("head", false)
+</head>
+<body>
+	<!--[if lt IE 7]>
+		 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+	<![endif]-->
+	<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">@Site.Current.Title</a>
+			</div>
+			<div class="navbar-collapse collapse navbar-responsive-collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="/">Home</a></li>
+					<li class="active"><a href="/blog">Blog</a></li>
+					<li><a href="#">About Me</a></li>
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+	<div class="container">
+		<div class="blog-header">
+			<h1 class="blog-title">@Site.Current.Title</h1>
+			<p class="lead blog-description">@Site.Current.Description</p>
+		</div>
+		<div class="row">
+			<div class="col-sm-8 blog-main">
+				@RenderBody()
+			</div><!--/blog-main-->
+			<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+				<div class="sidebar-module">
+					<h4>Joel Bennett</h4>
+					<p>Also known as "Jaykul" around the internet, I am a software engineer, a Microsoft MVP for PowerShell, and this is where I blog about PowerShell and software development, about technology, the web, and the world.</p>
+				</div>
+				<div class="sidebar-module well">
+					<h4>Tags</h4>
+					<ol class="list-inline">
+						@foreach (var tag in Site.Current.Tags.Keys)
+						{
+							<li><a href="/blogs/tags/@tag">@tag</a></li>
+						}
+					</ol>
+				</div>
+				<div class="sidebar-module well">
+					<div id="diigo_linkroll">
+						<script type="text/javascript" src="//www.diigo.com/roll2/linkrolls?v=4&username=jaykul&count=5&style=customize&icon=false&desc=1&l_type=0&t_color=3498db&t_fam=Lato,Helvetica Neue,Helvetica,Arial,sans-serif&t_size=14&t_bold=true&t_italic=false&t_underline=false&i_fam=Lato,Helvetica Neue,Helvetica,Arial,sans-serif&i_color=ffffff&i_size=12&i_bold=false&i_italic=false&i_underline=false&bg_color=00222222&bg_repeat=no-repeat&title=I%20diigo%20these%20links&tags=&bg_img="></script>
+					</div>
+				</div>
+				<div class="sidebar-module well">
+					<a class="twitter-timeline" href="https://twitter.com/Jaykul" height="700" data-widget-id="484816047145369600" data-chrome="transparent noscrollbar">Tweets by @@Jaykul</a>
+					<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+				</div>
+			</div><!-- /blog-sidebar -->
+
+		</div>
+
+		<hr>
+		<footer>
+			<p>&copy; @Site.Current.Author.Name 2014</p>
+		</footer>
+	</div> <!-- /container -->
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.1.min.js"><\/script>')</script>
+	<script src="/js/vendor/bootstrap.min.js"></script>
+	<script src="/js/main.js"></script>
+	@* Google Analytics: change UA-XXXXX-X to be your site's ID. *@
+	<script>
+		(function (i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date(); a = s.createElement(o),
+				m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+		ga('create', 'UA-52513307-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+	@RenderSection("script", false)
+</body>
+</html>
