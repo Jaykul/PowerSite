@@ -3,7 +3,15 @@ param(
 )
 try {
 	$ErrorActionPreference = "Stop"
-	Import-Module "C:\Users\Joel\Projects\PowerSite\PowerSite\bin\Debug\PowerSite.dll"
+	Import-Module "$PSScriptRoot\..\bin\Debug\PowerSite.dll"
+	if(!(Test-Path $Path)) { 
+		throw "That path doesn't exist!" 
+	}
+	if(Test-Path $Path -PathType Container) {
+		if(!(Test-Path (Join-Path $Path "config.psd1"))) { 
+			throw "There is no config.psd1 in that path" 
+		}
+	}
 	## 1. Parallel: Collect All Files (done)
 	$Site = New-Object PowerSite.DataModel.Site $path
 	$Site.LoadDocuments()

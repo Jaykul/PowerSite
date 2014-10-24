@@ -1,6 +1,6 @@
 ## Converted from ReST
 title: About Huddled Masses
-date: 2014-07-21 01:02:18 UTC-04:00
+date: 2014-07-21 01:02:18 -04:00
 tags: Site News
 description: What this site is about
 

@@ -55,11 +55,11 @@ namespace PowerSite.Builtin.Renderers
 		{
 			public string Resolve(string name)
 			{
-				var id = Path.GetFileNameWithoutExtension(name) ?? "default";
+				var id = (Path.GetFileNameWithoutExtension(name) ?? "default").ToLowerInvariant().Slugify();
 			
 				var extension = (Path.GetExtension(name) ?? ".cshtml").TrimStart('.');
 
-				var layout = DataModel.Site.Current.Theme.Layouts[id];
+				var layout = Site.Current.Theme.Layouts[id];
 			
 				if (!layout.Extension.Equals(String.IsNullOrEmpty(extension) ? "cshtml" : extension, StringComparison.OrdinalIgnoreCase))
 				{

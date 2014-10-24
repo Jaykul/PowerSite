@@ -1,15 +1,9 @@
-#   This should turn into something like a cucumber spec...
-#
-#    #. I want to be sure I'm not weakening validation for requests that I don't mean to affect.
-#    #. I want to be able to just trust a few specific certificate(s).
-#    #. I want to be able to just ignore problems for a single web request.
-#       except the ones that I specifically override security on.
-#
-
-title: Validating Self-Signed Certificates From .Net and PowerShell
-date: 2014-07-28 01:30:03 UTC-04:00
+---
+date: 2014-07-28 01:30:03 -04:00
 tags: PowerShell, SSL, REST, WebRequest
 description: A PowerShell module to allow weakening or circumventing SSL validation on web queries.
+title: Validating Self-Signed Certificates From .Net and PowerShell
+---
 
 In this article I'm going to present a module that helps you deal with one of the common problems for Windows PowerShell users (and even .Net developers) who are trying to interact from command-line applications with web interfaces (especially those that are hosted internally): Self-signed certificates, and how to ignore the errors that come when you try to validate them.  If you don't care about why I wrote it the way I wrote it, you can just [check out the module on GitHub](https://github.com/Jaykul/Tunable-SSL-Validator) or install it with PoshCode or PowerShellGet by running:
 
@@ -23,7 +17,7 @@ The module includes commands for importing certificates from files, loading them
 Some Background
 ===============
 
-The root of the problem is that the web request classes in .Net automatically validate SSL certificates, and until version 4.5 there was not an easy way to ignore SSL errors or skip the validation on an individual request. That means that when you try to get a web page from a server like the [computer science house at RIT](https://csh.rit.edu), you get an error like::
+The root of the problem is that the web request classes in .Net automatically validate SSL certificates, and until version 4.5 there was not an easy way to ignore SSL errors or skip the validation on an individual request. That means that when you try to get a web page from a server like the [computer science house at RIT](https://csh.rit.edu), you get an error like:
 
    The underlying connection was closed: Could not establish trust relationship for the SSL/TLS secure channel.
 
@@ -38,7 +32,7 @@ There are a couple of common approaches to this problem in PowerShell (and .Net 
 
 That first solution is probably the right one, and I actually wrote a couple of function in this module to make it easier (one to fetch a cert from a web server, and another to add a certificate to your trusted store).  Of course, it would be even better to set up an actual trusted root certificate authority (for instance, using Active Directory), but the bottom line is that either of these require permanently altering the trust of the computer in order to make a web request. The problem is that if you're writing scripts, cmdlets or .Net applications that may be used by others, it basically amounts to telling your potential users they have to deal with the problem themselves (which, for the record, is exactly what Microsoft did when they wrote their web cmdlets for PowerShell 3).
 
-So if you want to proactively avoid SSL errors, you have to set the ServerCertificateValidationCallback. For certain situations, it's enough to just do this in PowerShell::
+So if you want to proactively avoid SSL errors, you have to set the ServerCertificateValidationCallback. For certain situations, it's enough to just do this in PowerShell:
 
     $url = "https://csh.rit.edu"
     $web = New-Object Net.WebClient
@@ -46,11 +40,11 @@ So if you want to proactively avoid SSL errors, you have to set the ServerCertif
     $output = $web.DownloadString($url)
     [System.Net.ServicePointManager]::ServerCertificateValidationCallback = $null
 
-Note, that I set the ServerCertificateValidationCallback back to ``$null`` when I was done -- this restores normal validation, so I have, in effect, only disabled the validation for that one call (since PowerShell isn't generally multi-threaded, I don't normally have to worry about other threads being affeected). However, setting the ServerCertificateValidationCallback to a scriptblock won't work for an asynchronous callback (one that happens on a task thread), because the other thread won't have a runspace to execute the script on.  So, if you try to use the same technique with Invoke-WebRequest or Invoke-RestMethod instead of calling the .Net ``WebClient`` methods directly, you'll just get a different error::
+Note, that I set the ServerCertificateValidationCallback back to ``$null`` when I was done -- this restores normal validation, so I have, in effect, only disabled the validation for that one call (since PowerShell isn't generally multi-threaded, I don't normally have to worry about other threads being affeected). However, setting the ServerCertificateValidationCallback to a scriptblock won't work for an asynchronous callback (one that happens on a task thread), because the other thread won't have a runspace to execute the script on.  So, if you try to use the same technique with Invoke-WebRequest or Invoke-RestMethod instead of calling the .Net ``WebClient`` methods directly, you'll just get a different error:
 
     The underlying connection was closed: An unexpected error occurred on a send.
 
-If you dig in a little bit, you'll find that the InnerException of the error was::
+If you dig in a little bit, you'll find that the InnerException of the error was:
 
     There is no Runspace available to run scripts in this thread. 
     You can provide one in the DefaultRunspace property
@@ -71,7 +65,7 @@ There are several example validators on the [Using Trusted Roots Respectfully](h
 
 The point is that I don't want to weaken *all* validation, I just want to trust a specific cert for a specific domain, or perhaps just ignore problems on one domain, or make one specific request regardless of whether the SSL certificate is valid or not.
 
-Let's look at the callback and see the information we have to work with::
+Let's look at the callback and see the information we have to work with:
 
     bool TunableValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
 
@@ -82,5 +76,12 @@ Let's look at the callback and see the information we have to work with::
 
 So, what I've written is first a check for the three main SSL errors, and a way to pre-emptively ignore them once, or post-humously trust a certificate that failed the first time, as well as some better error messages (which have to be output using Console.Error.WriteLine rather than Write-Error because they might be running on a background thread).
 
-For now, that's enough of an explanation, I've posted the `tunable SSL validator code to github <module on github>`_, and this blog post as the ReadMe, where I'll update it with more details if need be.
+For now, that's enough of an explanation, I've posted the [tunable SSL validator code to github](https://github.com/Jaykul/Tunable-SSL-Validator), and this blog post as the ReadMe, where I'll update it with more details if need be.
 
+[//]: # (This should turn into something like a cucumber spec...	)
+[//]: # (	)
+[//]: # (#    #. I want to be sure I'm not weakening validation for requests that I don't mean to affect. )
+[//]: # (#    #. I want to be able to just trust a few specific certificate(s).	)
+[//]: # (#    #. I want to be able to just ignore problems for a single web request.	)
+[//]: # (#       except the ones that I specifically override security on.	)
+[//]: # (#	)

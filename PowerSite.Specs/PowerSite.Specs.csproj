@@ -66,7 +66,10 @@
     </Compile>
     <Compile Include="ConfigParsingSteps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="Samples\Blog\Themes\BootstrapBlog\blog-sidebar.cshtml" />
+    <None Include="Samples\Blog\Posts\missing-content.md" />
+    <None Include="Samples\Blog\Posts\validating-self-signed-certificates-properly-from-powershell.md" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\BlogLayout.cshtml" />
+    <None Include="Samples\Blog\Themes\BootstrapBlog\SiteLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -84,10 +87,8 @@
     <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.eot" />
     <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.ttf" />
     <None Include="Samples\Blog\Themes\BootstrapBlog\fonts\glyphicons-halflings-regular.woff" />
-    <None Include="Samples\Blog\Themes\BootstrapBlog\header.cshtml" />
     <None Include="Samples\Blog\Themes\BootstrapBlog\page.cshtml" />
     <None Include="Samples\Blog\Themes\BootstrapBlog\post.cshtml" />
-    <None Include="Samples\Blog\Themes\BootstrapBlog\script-footer.cshtml" />
     <None Include="Samples\Blog\Themes\BootstrapBlog\archive.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +118,9 @@
       <Project>{4a8f250c-3a76-423d-883b-cec3687895e7}</Project>
       <Name>PowerSite</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

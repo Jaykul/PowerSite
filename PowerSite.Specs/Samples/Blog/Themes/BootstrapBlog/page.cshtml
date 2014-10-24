@@ -1,33 +1,9 @@
 ﻿@using PowerSite.DataModel
-@using RazorEngine.Templating
-@inherits  TemplateBase<Document>
-@Include("header.cshtml", new { Author = Model.Author, Title = Model.Title })
-<body>
-	<!--[if lt IE 7]>
-		 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-	<![endif]-->
-	<div class="navbar navbar-default navbar-fixed-top" role="navigation">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#">@Site.Current.Title</a>
-			</div>
-			<div class="navbar-collapse collapse navbar-responsive-collapse">
-				<ul class="nav navbar-nav navbar-right">
-					<li class="active"><a href="#">Home</a></li>
-					<li><a href="/blog">Blog</a></li>
-					<li><a href="#">About Me</a></li>
-				</ul>
-			</div><!--/.navbar-collapse -->
-		</div>
-	</div>
+@inherits  RazorEngine.Templating.TemplateBase<Document>
+@{
+	Layout = "SiteLayout.cshtml";
+	ViewBag.Active = "Home";
+}
 
-	@Raw(Model.RenderedContent)
-	@Include("script-footer.cshtml")
-</body>
-</html>
+
+@Raw(Model.RenderedContent)

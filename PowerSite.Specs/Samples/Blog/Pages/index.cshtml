@@ -1,8 +1,9 @@
 @using PowerSite.DataModel
-@using RazorEngine.Templating
-@inherits  TemplateBase<dynamic>
-@Include("header.cshtml", new { Author = Site.Current.Author, Title = "Huddled Masses" })
-
+@inherits  RazorEngine.Templating.TemplateBase<dynamic>
+@{
+	Layout = "SiteLayout.cshtml";
+	ViewBag.Active = "Home";
+}
 <div class="jumbotron">
 	<div class="container">
 		<h1>@Site.Current.Title</h1>
