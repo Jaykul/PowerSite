@@ -14,69 +14,34 @@ namespace PowerSite.DataModel
 {
 	public class Site : IDisposable
 	{
-	
-		public static Site Current { get; private set; }
-	
-		#region IDisposable
-	
-		private bool _disposed = false;
-		protected virtual void Dispose(bool disposing)
+		public readonly static Dictionary<string, Site> ActiveSites = new Dictionary<string, Site>();
+		
+		public static Site Current;
+
+		public static Site ForPath(string siteRootPath)
 		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				if (Current == this)
-				{
-					Current = null;
-				}
-			}
-
-			_disposed = true;
+			AssertDirectoryExists(siteRootPath);
+			siteRootPath = Path.GetFullPath(siteRootPath).ToLowerInvariant();
+			return ActiveSites.ContainsKey(siteRootPath) ? ActiveSites[siteRootPath] : new Site(siteRootPath);
 		}
-
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-
-		private IEnumerable<Lazy<IRenderer, IExtension>> _engines;
-
-		private readonly Dictionary<string, IRenderer> _renderEngines = new Dictionary<string, IRenderer>();
-	
-		[ImportMany]
-		public IEnumerable<Lazy<IRenderer, IExtension>> Engines
-		{
-			get { return _engines; }
-			set
-			{
-				_engines = value;
-				_engines.ToList().ForEach(ex => _renderEngines.Add(ex.Metadata.Extension, ex.Value));
-			}
-		}
-	
-		private CompositionContainer _container;
-
-		public readonly List<Exception> Errors = new List<Exception>();
-
-		public bool? HasException = null;
 
 		#region Initialization
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Site"/> class.
 		/// </summary>
 		/// <param name="siteRootPath">The site root path.</param>
-		public Site(string siteRootPath)
+		private Site(string siteRootPath)
 		{
 			AssertDirectoryExists(siteRootPath);
-			SiteRootPath	= siteRootPath;
+			siteRootPath = Path.GetFullPath(siteRootPath.ToLowerInvariant());
+			if (ActiveSites.ContainsKey(siteRootPath))
+			{
+				throw new InvalidOperationException("Can only have one rendering transaction active on a site at a time. Ensure the previous rendering transaction was disposed before creating this one.");
+			}
+		
+			SiteRootPath = siteRootPath;
 
-			foreach (var path in new[] {"Pages", "Posts", "Static", "Themes", "Plugins", "Output", "Cache"})
+			foreach (var path in new[] { "Pages", "Posts", "Static", "Themes", "Plugins", "Output", "Cache" })
 			{
 				Paths[path] = CreateDirectoryIfNecessary(Path.Combine(siteRootPath, path));
 			}
@@ -84,12 +49,9 @@ namespace PowerSite.DataModel
 			InitializePluginCatalog();
 			Config = ImportSiteConfig();
 
-			if (Current != null)
-			{
-				throw new InvalidOperationException("Can only have one rendering transaction active at a time. Ensure the previous rendering transaction was disposed before creating this one.");
-			}
-			Current = this;
+			ActiveSites.Add(siteRootPath, this);
 		}
+
 		/// <summary>
 		/// Initializes the plugin catalog.
 		/// </summary>
@@ -109,15 +71,9 @@ namespace PowerSite.DataModel
 				{
 					catalog.Catalogs.Add(new DirectoryCatalog(pluginRoot));
 				}
-				else
-				{
-					// WriteVerbose("No Plugins directory found in site root: " + siteRootPath);
-				}
+				// Otherwise: WriteVerbose("No Plugins directory found in site root: " + siteRootPath);
 			}
-			else
-			{
-				// WriteWarning("Could not determine module root");
-			}
+			// Otherwise: WriteWarning("Could not determine module root");
 
 			//Create the CompositionContainer with the parts in the catalog
 			_container = new CompositionContainer(catalog);
@@ -156,7 +112,7 @@ namespace PowerSite.DataModel
 			{
 				throw new FileNotFoundException(String.Format("The {0} file is invalid at {1}", ConfigFile, SiteRootPath));
 			}
-
+			RootUrl = siteConfig.RootUrl;
 			Title = siteConfig.Title;
 			Description = siteConfig.Description;
 			Author = LanguagePrimitives.ConvertTo<Author>(siteConfig.Author);
@@ -164,19 +120,76 @@ namespace PowerSite.DataModel
 			BlogPath = siteConfig.BlogPath ?? "";
 			PrettyUrl = siteConfig.PrettyUrl ?? true;
 			PageSize = siteConfig.PostsPerArchivePage ?? 5;
-		
+
 			CreateDirectoryIfNecessary(Path.Combine(Paths["Cache"], BlogPath));
 			CreateDirectoryIfNecessary(Path.Combine(Paths["Output"], BlogPath));
-			
+
 			Theme = new Theme(Paths["Themes"], siteConfig.Theme ?? "BootstrapBlog");
 
 			return siteConfig;
+		}
+
+		public string RootUrl
+		{
+			get { return _rootUrl; }
+			set { _rootUrl = value.TrimEnd(new[] { '/', '\\' }) + '/'; }
+		}
+
+		public string BlogUrl
+		{
+			get { return RootUrl + BlogPath; }
 		}
 
 		public int PageSize { get; set; }
 
 		#endregion Initialization
 		
+		#region IDisposable
+	
+		private bool _disposed = false;
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_disposed) return;
+
+			if (disposing)
+			{
+				if (ActiveSites.ContainsKey(this.SiteRootPath))
+				{
+					ActiveSites.Remove(this.SiteRootPath);
+				}
+			}
+
+			_disposed = true;
+		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		#endregion
+
+		private IEnumerable<Lazy<IRenderer, IExtension>> _engines;
+
+		private readonly Dictionary<string, IRenderer> _renderEngines = new Dictionary<string, IRenderer>();
+	
+		[ImportMany]
+		public IEnumerable<Lazy<IRenderer, IExtension>> Engines
+		{
+			get { return _engines; }
+			set
+			{
+				_engines = value;
+				_engines.ToList().ForEach(ex => _renderEngines.Add(ex.Metadata.Extension, ex.Value));
+			}
+		}
+	
+		private CompositionContainer _container;
+
+		public readonly List<Exception> Errors = new List<Exception>();
+
+		public bool? HasException = null;
+
 		private const string ConfigFile = "config.psd1";
 		public dynamic Config { get; private set; }
 
@@ -215,6 +228,8 @@ namespace PowerSite.DataModel
 		public IdentityCollection<Document> Posts { get; set; }
 
 		private Dictionary<string, int> _tags;
+		private string _rootUrl;
+
 		public Dictionary<string, int> Tags
 		{
 			get
@@ -245,18 +260,20 @@ namespace PowerSite.DataModel
 
 		public void RenderDocuments()
 		{
-			Parallel.ForEach(Pages, doc => RenderMarkup(doc, Path.GetDirectoryName(doc.SourcePath).Substring(Paths["Pages"].Length).Trim(new[] { '\\' })));
-			Parallel.ForEach(Posts, doc => RenderMarkup(doc, BlogPath));
+			Current = this;
+			Parallel.ForEach(Pages, doc => RenderMarkup(doc, RootUrl + Path.GetDirectoryName(doc.SourcePath).Substring(Paths["Pages"].Length).Trim(new[] { '\\' })));
+			Parallel.ForEach(Posts, doc => RenderMarkup(doc, BlogUrl));
 		}
 
 		private void RenderMarkup(Document doc, string baseUrl)
 		{
-			doc.RelativeUrl = PrettyUrl ? Path.Combine(baseUrl, doc.Id, "index.html") : Path.Combine(baseUrl, doc.Id + ".html");
-			doc.RenderedContent = _renderEngines[doc.Extension].Render(doc.RawContent, doc);
+			doc.RelativeUrl = (PrettyUrl ? Path.Combine(baseUrl, doc.Id, "index.html") : Path.Combine(baseUrl, doc.Id + ".html")).Replace('\\','/');
+			doc.RenderedContent = _renderEngines[doc.Extension].Render(SiteRootPath, doc.RawContent, doc);
 		}
 
 		public void RenderTemplates()
 		{
+			Current = this;
 			Parallel.ForEach(Posts, RenderPost);
 			Parallel.ForEach(Pages, RenderPage);
 
@@ -266,22 +283,36 @@ namespace PowerSite.DataModel
 			if (Theme.Layouts.Contains("archive"))
 			{
 				var layout = Theme.Layouts["archive"];
-				int skip = 0;
-				while (skip < Posts.Count)
+			
+				// the main site index
+				RenderIndex(Path.Combine(Paths["Cache"], BlogPath), layout, Posts.ToList());
+				// tag indexes
+				foreach (var tag in Tags.Keys)
 				{
-					var outputPath = Path.Combine(Paths["Cache"], BlogPath, string.Format("index{0}.html", skip == 0 ? "": skip.ToString(CultureInfo.InvariantCulture)));
-					var output = _renderEngines[layout.Extension].Render(layout.RawContent, Posts.Skip(skip).Take(PageSize));
-					File.WriteAllText(outputPath, output);
-					skip += PageSize;
+					RenderIndex(CreateDirectoryIfNecessary(Path.Combine(Paths["Cache"], BlogPath, "tags")), layout, GetPostsByTag(tag));
 				}
-				Console.WriteLine("Rendered archive", Posts.Count);
+			
+				Console.WriteLine("Rendered archive");
 			}
 			if (Theme.Layouts.Contains("feed"))
 			{
 				var layout = Theme.Layouts["feed"];
 				var outputPath = Path.Combine(Paths["Cache"], BlogPath, "feed.xml");
-				var output = _renderEngines[layout.Extension].Render(layout.RawContent, layout);
+				var output = _renderEngines[layout.Extension].Render(SiteRootPath, layout.RawContent, Posts.OrderByDescending(doc => doc.Date).Take(5));
 				File.WriteAllText(outputPath, output);
+			}
+		}
+	
+		private void RenderIndex(string basePath, LayoutFile layout, IEnumerable<Document> posts)
+		{
+			int skip = 0;
+			IEnumerable<Document> page;
+			while ((page = posts.Skip(skip).Take(PageSize)).Any())
+			{
+				var outputPath = Path.Combine(basePath, string.Format("index{0}.html", skip == 0 ? "" : skip.ToString(CultureInfo.InvariantCulture)));
+				var output = _renderEngines[layout.Extension].Render(SiteRootPath, layout.RawContent, page);
+				File.WriteAllText(outputPath, output);
+				skip += PageSize;
 			}
 		}
 
@@ -289,7 +320,7 @@ namespace PowerSite.DataModel
 		{
 			var layout = Theme.Layouts["post"];
 			var outputPath = Path.Combine(Paths["Cache"], BlogPath, doc.Id, "index.html");
-			var output = _renderEngines[layout.Extension].Render(layout.RawContent, doc);
+			var output = _renderEngines[layout.Extension].Render(SiteRootPath, layout.RawContent, doc);
 
 			CreateDirectoryIfNecessary(Path.GetDirectoryName(outputPath));
 			File.WriteAllText(outputPath, output);
@@ -305,8 +336,8 @@ namespace PowerSite.DataModel
 			}
 			var outputPath = Path.Combine(Paths["Cache"], pagePath ?? "");
 			outputPath = Path.Combine(outputPath, doc.Id + ".html");
-		
-			var output = _renderEngines[layout.Extension].Render(layout.RawContent, doc);
+
+			var output = _renderEngines[layout.Extension].Render(SiteRootPath, layout.RawContent, doc);
 
 			CreateDirectoryIfNecessary(Path.GetDirectoryName(outputPath));
 			File.WriteAllText(outputPath, output);

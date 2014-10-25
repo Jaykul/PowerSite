@@ -43,7 +43,7 @@ namespace PowerSite.Actions
 			if (ParameterSetName == "FromPath")
 			{
 				if (helper == null)
-					helper = new Site(GetPluginPath(Path)); 
+					helper = Site.ForPath(GetPluginPath(Path)); 
 			
 				ProviderInfo providerInfo;
 				var files = GetResolvedProviderPathFromPSPath(Path, out providerInfo);
@@ -51,16 +51,16 @@ namespace PowerSite.Actions
 				{
 					Markup = new NamedContentBase(file, true);
 					var renderer = helper.Engines.First(i => i.Metadata.Extension.Equals(Markup.Extension)).Value;
-					WriteObject(renderer.Render(Markup.RawContent, Data));
+					WriteObject(renderer.Render(SiteRootPath, Markup.RawContent, Data));
 				}
 			}
 			else
 			{
 				if (helper == null)
-					helper = new Site(GetPluginPath(Markup.SourcePath));
+					helper = Site.ForPath(GetPluginPath(Markup.SourcePath));
 
 				var renderer = helper.Engines.First(i => i.Metadata.Extension.Equals(Markup.Extension)).Value;
-				Markup.RenderedContent = renderer.Render(Markup.RawContent, Data);
+				Markup.RenderedContent = renderer.Render(SiteRootPath, Markup.RawContent, Data);
 				WriteObject(Markup);
 			}
 		}

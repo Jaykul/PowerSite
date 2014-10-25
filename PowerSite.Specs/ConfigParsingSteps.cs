@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
-using System.Security.Policy;
 using TechTalk.SpecFlow;
 using Xunit;
 using PowerSite.DataModel;
@@ -36,12 +35,8 @@ namespace PowerSite.Specs
 		[When(@"I try to load the site")]
 		public void LoadTheSite()
 		{
-			if (DataModel.Site.Current != null)
-			{
-				DataModel.Site.Current.Dispose();
-			}
 		
-			var site = new DataModel.Site(ScenarioContext.Current.Get<string>("SiteRoot"));
+			var site = Site.ForPath(ScenarioContext.Current.Get<string>("SiteRoot"));
 			ScenarioContext.Current.Add("Site", site);
 		}
 
@@ -121,12 +116,21 @@ namespace PowerSite.Specs
 			foreach (var post in new[] {"a-fresh-start/index.html", "about-huddled-masses/index.html"}.Select(post => Path.Combine(blog, post)))
 			{
 				Assert.True(File.Exists(post), string.Format("Blog post '{0}' does not exist.", post));
+				Assert.NotEqual(0, new FileInfo(post).Length);
 			}
 		
 			foreach (var page in new[] {"index.html"}.Select(page => Path.Combine(blog, page)))
 			{
 				Assert.True(File.Exists(page), string.Format("Web page '{0}' does not exist.", page));
+				Assert.NotEqual(0, new FileInfo(page).Length);
 			}
+		}
+	
+		[AfterScenario]
+		public void DisposeSite()
+		{
+			if(ScenarioContext.Current.ContainsKey("Site"))
+				ScenarioContext.Current.Get<Site>("Site").Dispose();
 		}
 
 	}

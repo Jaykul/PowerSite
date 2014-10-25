@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
@@ -15,15 +16,14 @@ namespace PowerSite.Builtin.Renderers
 	[ExportMetadata("Extension", "cshtml")]
 	public class RazorRenderer : IRenderer
 	{
-		public string Render(string template, dynamic data)
+		public string Render(string siteKey, string template, dynamic data)
 		{
 			string result = null;
 
-			var config = new TemplateServiceConfiguration() { Resolver = new RazorRenderer.TemplateResolver() };
-
+			var config = new TemplateServiceConfiguration { Resolver = new TemplateResolver(siteKey) };
 			config.Namespaces.Add("System.IO");
 			config.Namespaces.Add("RazorEngine.Text");
-
+		
 			using (var service = new TemplateService(config))
 			{
 				Razor.SetTemplateService(service);
@@ -53,21 +53,42 @@ namespace PowerSite.Builtin.Renderers
 
 		private class TemplateResolver : ITemplateResolver
 		{
+			private readonly string _siteRootPath;
+
+			public TemplateResolver(string siteRootPath)
+			{
+				_siteRootPath = siteRootPath;
+			}
+		
 			public string Resolve(string name)
 			{
 				var id = (Path.GetFileNameWithoutExtension(name) ?? "default").ToLowerInvariant().Slugify();
 			
 				var extension = (Path.GetExtension(name) ?? ".cshtml").TrimStart('.');
 
-				var layout = Site.Current.Theme.Layouts[id];
-			
-				if (!layout.Extension.Equals(String.IsNullOrEmpty(extension) ? "cshtml" : extension, StringComparison.OrdinalIgnoreCase))
+				try
 				{
-					Console.WriteLine("Resolved wrong. Layout {0} extension {1}", name, extension);
+					var layout = Site.ForPath(_siteRootPath).Theme.Layouts[id];
+
+					if (!layout.Extension.Equals(String.IsNullOrEmpty(extension) ? "cshtml" : extension, StringComparison.OrdinalIgnoreCase))
+					{
+						Console.Error.WriteLine("Resolved wrong. Layout {0} is not razor. Extension: {1}", name, extension);
+						return "Raw(@Model)";
+					}
+					return layout.RawContent;
 				}
-				return layout.RawContent;
+				catch (KeyNotFoundException knf)
+				{
+					Console.Error.WriteLine("Layout not found: Layout {0} extension {1}", name, extension);
+					return "Raw(@Model)";
+				}
 			}
 		}
 	}
 
+	public class PowerSiteTemplate<T> : TemplateBase<T>
+	{
+		public Site Site { get; set; }
+	
+	}
 }

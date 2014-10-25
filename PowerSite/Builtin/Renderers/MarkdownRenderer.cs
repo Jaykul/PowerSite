@@ -22,7 +22,7 @@ namespace PowerSite.Builtin.Renderers
 
 		private Markdown MarkdownEngine { get; set; }
 
-		public string Render(string template, dynamic data = null)
+		public string Render(string siteKey, string template, dynamic data = null)
 		{
 			var engine = new Markdown(new MarkdownOptions() { AutoHyperlink = true });
 			return engine.Transform(template).Trim();

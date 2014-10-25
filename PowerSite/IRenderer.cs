@@ -14,10 +14,11 @@ namespace PowerSite
         /// <summary>
         /// Renders a template with the provided data.
         /// </summary>
+        /// <param name="siteKey">Unique site key (e.g. the full path to the site root).</param>
         /// <param name="template">Template to render.</param>
         /// <param name="data">Data provided to template.</param>
         /// <returns>Rendered template content.</returns>
-        string Render(string template, dynamic data);
+        string Render(string siteKey, string template, dynamic data);
     }
 
     public interface IExtension

@@ -25,7 +25,7 @@ namespace PowerSite.Actions
 				{
 					_siteRootPath = CurrentProviderLocation("FileSystem").ProviderPath;
 				}
-				_helper = new DataModel.Site(_siteRootPath);
+				_helper = Site.ForPath(_siteRootPath);
 			}
 			catch (IOException ex)
 			{

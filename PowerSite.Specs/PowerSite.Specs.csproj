@@ -71,6 +71,7 @@
     <None Include="Samples\Blog\Themes\BootstrapBlog\BlogLayout.cshtml">
       <SubType>Code</SubType>
     </None>
+    <None Include="Samples\Blog\Themes\BootstrapBlog\feed.cshtml" />
     <None Include="Samples\Blog\Themes\BootstrapBlog\SiteLayout.cshtml">
       <SubType>Code</SubType>
     </None>

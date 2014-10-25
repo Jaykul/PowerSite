@@ -1,0 +1,25 @@
+﻿@using System
+@using System.Linq
+@using PowerSite.DataModel
+@inherits  RazorEngine.Templating.TemplateBase<System.Collections.Generic.IEnumerable<Document>>
+
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<channel>
+		<title>@Site.Current.Title</title>
+		<link>@Site.Current.BlogUrl</link>
+		<description>@Site.Current.Description</description>
+		<language>en</language>
+		<lastbuilddate>@DateTime.UtcNow.ToString("r")</lastbuilddate>
+		<generator>http://HuddledMasses.org/PowerSite</generator>
+		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+		@foreach(var post in Model){
+			<item>
+				<title>@post.Title</title>
+				<dc:creator>@post.Author.Name</dc:creator>
+				<guid ispermalink="true">@Raw(post.RelativeUrl)</guid>
+				<description><![CDATA[@Raw(post.RenderedContent)]]></description>
+			</item>
+		}
+	</channel>
+</rss>
