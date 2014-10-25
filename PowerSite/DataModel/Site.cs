@@ -59,7 +59,7 @@ namespace PowerSite.DataModel
 		{
 			var catalog = new AggregateCatalog();
 			//Adds all the parts found in the same assembly as the Program class
-			var assembly = typeof(BasePowerSiteCommand).Assembly;
+			var assembly = typeof(Site).Assembly;
 			catalog.Catalogs.Add(new AssemblyCatalog(assembly));
 
 			if (!string.IsNullOrEmpty(SiteRootPath) && Directory.Exists(SiteRootPath))
@@ -289,7 +289,7 @@ namespace PowerSite.DataModel
 				// tag indexes
 				foreach (var tag in Tags.Keys)
 				{
-					RenderIndex(CreateDirectoryIfNecessary(Path.Combine(Paths["Cache"], BlogPath, "tags")), layout, GetPostsByTag(tag));
+					RenderIndex(CreateDirectoryIfNecessary(Path.Combine(Paths["Cache"], BlogPath, "tags", tag)), layout, GetPostsByTag(tag));
 				}
 			
 				Console.WriteLine("Rendered archive");

@@ -36,7 +36,7 @@ namespace PowerSite.Actions
 			return SiteRootPath;
 		}
 
-		private Site helper;
+		protected Site helper;
 
 		protected override void ProcessRecord()
 		{

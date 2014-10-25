@@ -9,7 +9,7 @@ using PowerSite.DataModel;
 
 namespace PowerSite.Actions
 {
-	public class BasePowerSiteCommand : PSCmdlet
+	public class BasicallyPowerSiteCommand : PSCmdlet
 	{
 		protected string _siteRootPath;
 		protected DataModel.Site _helper;
@@ -19,18 +19,7 @@ namespace PowerSite.Actions
 		protected override void BeginProcessing()
 		{
 			base.BeginProcessing();
-			try
-			{
-				if (string.IsNullOrEmpty(_siteRootPath))
-				{
-					_siteRootPath = CurrentProviderLocation("FileSystem").ProviderPath;
-				}
-				_helper = Site.ForPath(_siteRootPath);
-			}
-			catch (IOException ex)
-			{
-				ThrowTerminatingError( new ErrorRecord( ex, "ConfigFileNotLoaded", ErrorCategory.InvalidData, _siteRootPath));
-			}
+
 		}
 
 		protected override void EndProcessing()
