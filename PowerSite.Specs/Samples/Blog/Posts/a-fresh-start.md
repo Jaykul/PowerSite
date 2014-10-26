@@ -13,7 +13,7 @@ I apologize for all the hundreds of broken links that are pointed at my domain r
 A state of flux
 ---------------
 
-In the end, to try switching to a static site generator instead of a server-side blogging tool, so I went to [StaticGen][1] and I've started working my way through some of the many interesting options.  I'll probably be switching back and forth between them over the coming days, so the site may change quite a bit (not just visually, but in permalinks, etc.) until I settle on one.
+In the end, I decided to try switching to a static site generator instead of a server-side blogging tool, so I went to [StaticGen][1] and I've started working my way through some of the many interesting options.  I'll probably be switching back and forth between them over the coming days, so the site may change quite a bit (not just visually, but in permalinks, etc.) until I settle on one.
 
 I also decided that I will not restore the database backup and deal with cleaning all the downloads that have accumulated in the last ... almost 20 years of blogging (isn't that crazy?).  Instead,  I will start over. I can still restore individual articles from my old blog by hand (at least the ones that people really are still looking for), and that will give me the chance to update the content and to convert them to markdown (yeah, I think textile lost that battle).
  
