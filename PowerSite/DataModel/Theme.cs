@@ -5,22 +5,22 @@ namespace PowerSite.DataModel
 {
 	public class Theme
 	{
-		private readonly string themeRoot;
+		public readonly string ThemeRoot;
 
 		public Theme(string root, string themeName)
 		{
 			Name = themeName;
-			themeRoot = Path.Combine(root, themeName);
+			ThemeRoot = Path.Combine(root, themeName);
 		}
 
 		public void Load()
 		{
-			if (!Directory.Exists(themeRoot))
+			if (!Directory.Exists(ThemeRoot))
 			{
-				throw new DirectoryNotFoundException(string.Format("Cannot find the theme '{0}' in the site themes '{1}'", Name, themeRoot));
+				throw new DirectoryNotFoundException(string.Format("Cannot find the theme '{0}' in the site themes '{1}'", Name, ThemeRoot));
 			}
 
-			Layouts = IdentityCollection<LayoutFile>.Create(Directory.EnumerateFiles(themeRoot).Select(f => new LayoutFile(f)));
+			Layouts = IdentityCollection<LayoutFile>.Create(Directory.EnumerateFiles(ThemeRoot).Select(f => new LayoutFile(f)));
 		}
 
 		public IdentityCollection<LayoutFile> Layouts { get; set; }
