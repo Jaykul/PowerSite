@@ -10,7 +10,7 @@
 @foreach (var blog in Model)
 {
 	<div class="blog-post">
-		<a href="/@blog.RelativeUrl"><h2 class="blog-post-title">@blog.Title</h2></a>
+		<a href="@blog.RelativeUrl"><h2 class="blog-post-title">@blog.Title</h2></a>
 		<p class="blog-post-meta">@blog.Date.ToString("d") by <a href="#">@blog.Author.Name</a></p>
 		@Raw(blog.Summary)
 	</div>

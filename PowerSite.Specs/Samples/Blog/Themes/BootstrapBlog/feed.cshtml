@@ -17,7 +17,7 @@
 			<item>
 				<title>@post.Title</title>
 				<dc:creator>@post.Author.Name</dc:creator>
-				<guid ispermalink="true">@Raw(post.RelativeUrl)</guid>
+				<guid ispermalink="true">@Raw(post.FullyQualifiedUrl)</guid>
 				<description><![CDATA[@Raw(post.RenderedContent)]]></description>
 			</item>
 		}

@@ -261,13 +261,14 @@ namespace PowerSite.DataModel
 		public void RenderDocuments()
 		{
 			Current = this;
-			Parallel.ForEach(Pages, doc => RenderMarkup(doc, RootUrl + Path.GetDirectoryName(doc.SourcePath).Substring(Paths["Pages"].Length).Trim(new[] { '\\' })));
-			Parallel.ForEach(Posts, doc => RenderMarkup(doc, BlogUrl));
+			Parallel.ForEach(Pages, doc => RenderMarkup(doc, Path.GetDirectoryName(doc.SourcePath).Substring(Paths["Pages"].Length).Trim('\\')));
+			Parallel.ForEach(Posts, doc => RenderMarkup(doc, BlogPath));
 		}
 
-		private void RenderMarkup(Document doc, string baseUrl)
+		private void RenderMarkup(Document doc, string path)
 		{
-			doc.RelativeUrl = (PrettyUrl ? Path.Combine(baseUrl, doc.Id, "index.html") : Path.Combine(baseUrl, doc.Id + ".html")).Replace('\\','/');
+			doc.RelativeUrl = "/" + Path.Combine(path, (doc.Id + (PrettyUrl ? "/index.html" : ".html"))).Replace('\\', '/');
+			doc.FullyQualifiedUrl = RootUrl.TrimEnd('/') + doc.RelativeUrl;
 			doc.RenderedContent = _renderEngines[doc.Extension].Render(SiteRootPath, doc.RawContent, doc);
 		}
 

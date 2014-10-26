@@ -76,7 +76,8 @@ namespace PowerSite.DataModel
 		public string RenderedContent { get; set; }
 		public dynamic Metadata { get; set; }
 		public string RelativeUrl { get; set; }
-
+		public string FullyQualifiedUrl { get; set; }
+	
 		private static readonly Regex MetadataKeyValue = new Regex(@"^(?<key>\w+):\s?(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
 
 		protected void LoadRawContent()
