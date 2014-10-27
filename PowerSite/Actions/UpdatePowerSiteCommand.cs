@@ -21,6 +21,8 @@ namespace PowerSite.Actions
 				var themeRoot = _helper.Theme.ThemeRoot;
 				var cachePath = _helper.Paths["Cache"];
 				var outputPath = _helper.Paths["Output"];
+			
+				// 2. Calculate destinations (output paths and URLs)
 
 				if (FileSystem.DirectoryExists(cachePath))
 				{
@@ -31,7 +33,7 @@ namespace PowerSite.Actions
 				// 2. XCopy static Theme parts (or copy everything and delete ones which need to be rendered)
 				FileSystem.CopyDirectory(themeRoot, cachePath);
 
-				foreach (var file in _helper.Engines.Select(e => e.Metadata.Extension).
+				foreach (var file in _helper.Keys.
 					SelectMany(extension => Directory.EnumerateFiles(cachePath, string.Format("*.{0}", extension))))
 				{
 					File.Delete(file);

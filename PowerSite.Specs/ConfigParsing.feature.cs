@@ -135,19 +135,65 @@ this.ScenarioSetup(scenarioInfo);
         
         [Xunit.FactAttribute()]
         [Xunit.TraitAttribute("FeatureTitle", "ConfigParsing")]
-        [Xunit.TraitAttribute("Description", "Render Markup")]
-        public virtual void RenderMarkup()
+        [Xunit.TraitAttribute("Description", "Calculating Page URLs")]
+        public virtual void CalculatingPageURLs()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Render Markup", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Calculating Page URLs", ((string[])(null)));
 #line 24
 this.ScenarioSetup(scenarioInfo);
 #line 25
  testRunner.Given("I have loaded the sample blog", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 26
- testRunner.And("I load the documents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.When("I load the documents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 27
+ testRunner.Then("the Pages should have URLs: http://HuddledMasses.org/index.html", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.FactAttribute()]
+        [Xunit.TraitAttribute("FeatureTitle", "ConfigParsing")]
+        [Xunit.TraitAttribute("Description", "Calculating Blog Post URLs")]
+        public virtual void CalculatingBlogPostURLs()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Calculating Blog Post URLs", ((string[])(null)));
+#line 29
+this.ScenarioSetup(scenarioInfo);
+#line 30
+ testRunner.Given("I have loaded the sample blog", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 31
+ testRunner.When("I load the documents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 32
+ testRunner.Then("the Posts should have URLs: http://HuddledMasses.org/blog/a-fresh-start/index.htm" +
+                    "l", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 33
+ testRunner.And("the Posts should have URLs: http://HuddledMasses.org/blog/about-huddled-masses/in" +
+                    "dex.html", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 34
+ testRunner.And("the Posts should have URLs: http://HuddledMasses.org/blog/missing-content/index.h" +
+                    "tml", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 35
+ testRunner.And("the Posts should have URLs: http://HuddledMasses.org/blog/validating-self-signed-" +
+                    "certificates-properly-from-powershell/index.html", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.FactAttribute()]
+        [Xunit.TraitAttribute("FeatureTitle", "ConfigParsing")]
+        [Xunit.TraitAttribute("Description", "Render Markup")]
+        public virtual void RenderMarkup()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Render Markup", ((string[])(null)));
+#line 37
+this.ScenarioSetup(scenarioInfo);
+#line 38
+ testRunner.Given("I have loaded the sample blog", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 39
+ testRunner.And("I load the documents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 40
  testRunner.When("I render the markup", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 28
+#line 41
  testRunner.Then("all the posts in the site should have RenderedContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -159,17 +205,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void RenderPages()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Render Pages", ((string[])(null)));
-#line 30
+#line 43
 this.ScenarioSetup(scenarioInfo);
-#line 31
+#line 44
  testRunner.Given("I have loaded the sample blog", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 32
+#line 45
  testRunner.And("I load the documents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 33
+#line 46
  testRunner.And("I render the markup", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 34
+#line 47
  testRunner.When("I render the pages", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 35
+#line 48
  testRunner.Then("I get actual pages", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

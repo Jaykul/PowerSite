@@ -12,7 +12,7 @@ namespace PowerSite.Actions
 	public class BasicallyPowerSiteCommand : PSCmdlet
 	{
 		protected string _siteRootPath;
-		protected DataModel.Site _helper;
+		protected Site _helper;
 	
 		protected dynamic Config { get { return _helper.Config; } }
 

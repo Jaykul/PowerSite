@@ -9,7 +9,7 @@ namespace PowerSite.DataModel
 {
 	public class Document : NamedContentBase
 	{
-		public Document(string path, Author author, bool preLoadContent=false) : base(path, preLoadContent)
+		public Document(Author author, string path, string id = null, bool preLoadContent = false) : base(path, id, preLoadContent)
 		{
 			if (Author == null)
 			{
@@ -47,10 +47,10 @@ namespace PowerSite.DataModel
 
 	public class NamedContentBase : IIdentityObject
 	{
-		public NamedContentBase(string path, bool preloadContent = false)
+		public NamedContentBase(string path, string id = null, bool preloadContent = false)
 		{
 			SourcePath = path;
-			Id = Path.GetFileNameWithoutExtension(path).Slugify();
+			Id = id ?? Path.GetFileNameWithoutExtension(path).Slugify();
 			Extension = (Path.GetExtension(path) ?? "md").Trim(new []{'.'});
 			LoadFile(true, preloadContent);
 		}

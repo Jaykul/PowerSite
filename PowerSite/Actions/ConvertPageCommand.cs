@@ -49,9 +49,8 @@ namespace PowerSite.Actions
 				var files = GetResolvedProviderPathFromPSPath(Path, out providerInfo);
 				foreach (var file in files)
 				{
-					Markup = new NamedContentBase(file, true);
-					var renderer = helper.Engines.First(i => i.Metadata.Extension.Equals(Markup.Extension)).Value;
-					WriteObject(renderer.Render(SiteRootPath, Markup.RawContent, Data));
+					Markup = new NamedContentBase(file, preloadContent: true);
+					WriteObject(helper[Markup.Extension].Render(SiteRootPath, Markup.RawContent, Data));
 				}
 			}
 			else
@@ -59,8 +58,7 @@ namespace PowerSite.Actions
 				if (helper == null)
 					helper = Site.ForPath(GetPluginPath(Markup.SourcePath));
 
-				var renderer = helper.Engines.First(i => i.Metadata.Extension.Equals(Markup.Extension)).Value;
-				Markup.RenderedContent = renderer.Render(SiteRootPath, Markup.RawContent, Data);
+				Markup.RenderedContent = helper[Markup.Extension].Render(SiteRootPath, Markup.RawContent, Data);
 				WriteObject(Markup);
 			}
 		}

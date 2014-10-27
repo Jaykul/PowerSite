@@ -52,14 +52,14 @@ namespace PowerSite.Specs
 		[When(@"I load the documents")]
 		public void LoadDocuments()
 		{
-			var site = ScenarioContext.Current.Get<DataModel.Site>("Site");
+			var site = ScenarioContext.Current.Get<Site>("Site");
 			site.LoadDocuments();
 		}
 
 		[Then(@"the site should have matching properties:")]
 		public void ThenThePowerSiteShouldHaveMatchingProperties(Table table)
 		{
-			var site = ScenarioContext.Current.Get<DataModel.Site>("Site");
+			var site = ScenarioContext.Current.Get<Site>("Site");
 			var config = (Hashtable)((PSObject)site.Config).BaseObject;
 
 			foreach (var row in table.Rows)
@@ -73,14 +73,14 @@ namespace PowerSite.Specs
 		[Then(@"the site should have Posts with RawContent")]
 		public void ThenThePowerSiteShouldHavePostsWithRawContent()
 		{
-			var site = ScenarioContext.Current.Get<DataModel.Site>("Site");
+			var site = ScenarioContext.Current.Get<Site>("Site");
 			Assert.True( site.Posts.All(doc => !string.IsNullOrEmpty(doc.RawContent)) );
 		}
 
 		[Then(@"the site should not have Posts with RenderedContent")]
 		public void ThenThePowerSiteShouldNotHavePostsWithRenderedContent()
 		{
-			var site = ScenarioContext.Current.Get<DataModel.Site>("Site");
+			var site = ScenarioContext.Current.Get<Site>("Site");
 			Assert.True( site.Posts.All(doc => string.IsNullOrEmpty(doc.RenderedContent)) );
 		}
 
@@ -88,21 +88,21 @@ namespace PowerSite.Specs
 		[Given(@"I render the markup")]
 		public void RenderDocuments()
 		{
-			var site = ScenarioContext.Current.Get<DataModel.Site>("Site");
+			var site = ScenarioContext.Current.Get<Site>("Site");
 			site.RenderDocuments();
 		}
 
 		[Then(@"all the posts in the site should have RenderedContent")]
 		public void ThenAllThePostsInThePowerSiteShouldHaveRenderedContent()
 		{
-			var site = ScenarioContext.Current.Get<DataModel.Site>("Site");
+			var site = ScenarioContext.Current.Get<Site>("Site");
 			Assert.True(site.Posts.All(doc => !string.IsNullOrEmpty(doc.RenderedContent)));
 		}
 
 		[When(@"I render the pages")]
 		public void WhenIRenderThePages()
 		{
-			var site = ScenarioContext.Current.Get<DataModel.Site>("Site");
+			var site = ScenarioContext.Current.Get<Site>("Site");
 			site.RenderTemplates();
 		}
 
@@ -110,7 +110,7 @@ namespace PowerSite.Specs
 		public void ThenIGetActualPages()
 		{
 			var root = ScenarioContext.Current.Get<string>("SiteRoot");
-			var blog = ScenarioContext.Current.Get<DataModel.Site>("Site").BlogPath;
+			var blog = ScenarioContext.Current.Get<Site>("Site").BlogPath;
 			blog = Path.Combine(root, "Cache", blog);
 
 			foreach (var post in new[] {"a-fresh-start/index.html", "about-huddled-masses/index.html"}.Select(post => Path.Combine(blog, post)))
@@ -124,6 +124,22 @@ namespace PowerSite.Specs
 				Assert.True(File.Exists(page), string.Format("Web page '{0}' does not exist.", page));
 				Assert.NotEqual(0, new FileInfo(page).Length);
 			}
+		}
+
+
+		[Then(@"the Posts should have URLs: ([^ ]+)")]
+		public void ThenThePostsShouldHaveURLs(string url)
+		{
+			var blog = ScenarioContext.Current.Get<Site>("Site");
+			Assert.Contains(url, blog.Posts.Select(post => post.FullyQualifiedUrl));
+		}
+
+		[Then(@"the Pages should have URLs: ([^ ]+)")]
+		public void ThenThePagesShouldHaveURLs(string url)
+		{
+			var blog = ScenarioContext.Current.Get<Site>("Site");
+			// TODO: this may break if I add another page test
+			Assert.Equal(url, blog.Pages[0].FullyQualifiedUrl);
 		}
 	
 		[AfterScenario]

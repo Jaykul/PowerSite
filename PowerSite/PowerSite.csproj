@@ -59,7 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataModel\Site.cs" />
+    <Compile Include="EngineHost.cs" />
+    <Compile Include="Site.cs" />
     <Compile Include="Actions\UpdatePowerSiteCommand.cs" />
     <Compile Include="DataModel\LayoutFile.cs" />
     <Compile Include="Actions\ConvertPageCommand.cs" />
