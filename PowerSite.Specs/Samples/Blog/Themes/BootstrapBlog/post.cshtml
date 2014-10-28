@@ -1,4 +1,5 @@
 ﻿@using PowerSite
+@using PowerSite.Actions
 @using PowerSite.DataModel
 @inherits  RazorEngine.Templating.TemplateBase<Document>
 @{
@@ -9,6 +10,17 @@
 
 <div class="blog-post">
 	<h2 class="blog-post-title">@Model.Title</h2>
-	<p class="blog-post-meta">@Model.Date by <a href="#">@Model.Author.Name</a></p>
+	<p class="blog-post-meta">
+		<span class="blog-post-time">@Model.DateString</span> by <a class="blog-post-author" href="#">@Model.Author.Name</a>
+	</p>
 	@Raw(Model.RenderedContent)
+	<div class="text-right">
+		Tagged:
+		<ul class="list-inline label">
+			@foreach (var tag in Model.Tags)
+			{
+				<li><a href="/blog/tags/@tag.Slugify()/">@tag</a></li>
+			}
+		</ul>
+	</div>
 </div>

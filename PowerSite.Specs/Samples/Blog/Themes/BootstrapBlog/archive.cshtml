@@ -1,18 +1,31 @@
 ﻿@using System.Linq
 @using PowerSite
+@using PowerSite.Actions
 @using PowerSite.DataModel
 @inherits  RazorEngine.Templating.TemplateBase<System.Collections.Generic.IEnumerable<Document>>
 @{
 	Layout = "BlogLayout.cshtml";
 	ViewBag.Author = Site.Current.Author.Name;
 	ViewBag.Title = Site.Current.Author.Name + "'s Blog - " + Site.Current.Title;
+	ViewBag.FeedUrl = "feed.xml";
 }
 
 @foreach (var blog in Model)
 {
 	<div class="blog-post">
 		<a href="@blog.RelativeUrl"><h2 class="blog-post-title">@blog.Title</h2></a>
-		<p class="blog-post-meta">@blog.Date.ToString("d") by <a href="#">@blog.Author.Name</a></p>
+		<p class="blog-post-meta">
+			<span class="blog-post-time">@blog.DateString</span> by <a class="blog-post-author" href="#">@blog.Author.Name</a>
+		</p>
+		<div class="text-right">
+			Tagged:
+			<ul class="list-inline label">
+				@foreach (var tag in blog.Tags)
+				{
+					<li><a href="/blog/tags/@tag.Slugify()/">@tag</a></li>
+				}
+			</ul>
+		</div>
 		@Raw(blog.Summary)
 	</div>
 }
