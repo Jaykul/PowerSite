@@ -9,7 +9,7 @@ using Microsoft.VisualBasic.FileIO;
 namespace PowerSite.Actions
 {
 	[Cmdlet(VerbsData.Update, "PowerSite")]
-	public class UpdatePowerSiteCommand : ImportPowerSiteCommand
+	public class UpdatePowerSiteCommand : GetPowerSiteCommand
 	{
 		protected override void EndProcessing()
 		{
