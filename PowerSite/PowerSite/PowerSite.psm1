@@ -42,7 +42,14 @@ function Get-PowerSitePost {
 }
 
 
-function FastPostGitHub {
+function FastPushGitHub {
+	#.Synopsis
+	#	Push changes to github
+	#.Description
+	#	Based on github pages model:
+	#	1. Assume everything is checked in.
+	#	2. Use a "source" branch for editing pages: build it to an ignored "Output" folder
+	#	3. Switch to the "master" branch and copy from the output, push.
 	[CmdletBinding(DefaultParameterSetName="PowerSite")]
 	param(
 		[Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
@@ -53,6 +60,12 @@ function FastPostGitHub {
 		[Alias("Path")]
 		[String]$Root = $Pwd,
 
+		# The Source branch in git (defaults to source)
+		[String]$SourceBranchName = "source",
+
+		# The Publish branch in git (defaults to master)
+		[String]$PublishBranchName = "master",
+
 		# The PowerSite to use
 		[Parameter(ValueFromPipeline=$true, ParameterSetName="PowerSite")]
 		[PowerSite.Site]$PowerSite = $(Get-PowerSite -Root $Root)
@@ -60,14 +73,21 @@ function FastPostGitHub {
 	$site = Get-PowerSite -SiteRootPath $Root
 
 	Push-Location $site.SiteRootPath
+	if(git status -s) {
+		Pop-Location
+		throw "Your site directory isn't clean, please commit or clean up and try again."
+	}
+	$ErrorActionPreference = "Stop"
 
-	git checkout source --force
+	git checkout $SourceBranchName --force
 
-	New-PowerSitePost $Name | edit
 	Update-PowerSite -SiteRootPath $pwd
-	git commit -a -m "Added post $name"
-	git checkout master --force
+
+	git checkout $PublishBranchName --force
+
+	ls -exclude output, .git\, .gitignore | rm -Recurse
 	cp .\Output\* $Pwd -Force -Recurse
-	git commit -a -m "Added post $name"
+	git add *
+	git commit -a -m "FastPush from PowerSite"
 	git push
 }
