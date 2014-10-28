@@ -8,10 +8,10 @@ using PowerSite.DataModel;
 
 namespace PowerSite.Actions
 {
-	[Cmdlet(VerbsData.Import, "PowerSite")]
-	public class ImportPowerSiteCommand : PSCmdlet
+	[Cmdlet(VerbsCommon.Get, "PowerSite")]
+	public class GetPowerSiteCommand : PSCmdlet
 	{
-		protected string _siteRootPath;
+		private string _siteRootPath;
 		protected Site _helper;
 		//[Parameter(ParameterSetName = "FromConfiguration")]
 		//public PSObject Configuration
@@ -72,10 +72,8 @@ namespace PowerSite.Actions
 			}
 		}
 
-		protected override void ProcessRecord()
+		protected override void EndProcessing()
 		{
-			this.SessionState.PSVariable.Set("script:PowerSiteActiveSessions",Site.ActiveSites);
-			// base.BeginProcessing asserts the existence of our root, se we can just parse away
 			WriteObject(_helper);
 		}
 	}

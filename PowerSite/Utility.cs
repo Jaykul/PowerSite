@@ -20,13 +20,17 @@ namespace PowerSite.Actions
 				return null;
 			}
 			id = Path.GetFileNameWithoutExtension(id);
-			id = Regex.Replace(id, @"[^\w\s_\-\.]+", String.Empty); // first, allow only words, spaces, underscores, dashes and dots.
-			id = Regex.Replace(id, @"\.{2,}", String.Empty); // strip out any dots stuck together (no pathing attempts).
-			id = Regex.Replace(id, @"\s{2,}", " "); // convert multiple spaces into single space.
-			id = id.Trim(new[] { ' ', '.' }); // ensure the string does not start or end with a dot
-			return id.Replace(' ', '-').ToLowerInvariant(); // finally, replace all spaces with dashes and lowercase it.
+			id = Regex.Replace(id, @"[^\w\s_\-\.]+", String.Empty);	// first, allow only words, spaces, underscores, dashes and dots.
+			id = Regex.Replace(id, @"\.{2,}", String.Empty);	// strip out any dots stuck together (no pathing attempts).
+			id = Regex.Replace(id, @"\s{2,}", " ");	// convert multiple spaces into single space.
+			id = id.Trim(new[] { ' ', '.' });	// ensure the string does not start or end with a dot
+			return id.Replace(' ', '-').ToLowerInvariant();	// finally, replace all spaces with dashes and lowercase it.
 		}
-
+		public static string ToTitleCase(this string id)
+		{
+			return string.Join(" ", id.Split(' ').Select(str => str.Substring(0, 1).ToUpperInvariant() + str.Substring(1)));
+		}
+	
 		public static string CreateDirectoryIfNecessary(string path)
 		{
 			if (!Directory.Exists(path))

@@ -15,12 +15,11 @@ namespace PowerSite.Actions
 		{
 			try
 			{
-				base.EndProcessing();
 				// 1. Parallel: Collect All Files (done)
 				_helper.LoadDocuments();
 				var themeRoot = _helper.Theme.ThemeRoot;
-				var cachePath = _helper.Paths["Cache"];
-				var outputPath = _helper.Paths["Output"];
+				var cachePath = _helper.Paths["cache"];
+				var outputPath = _helper.Paths["output"];
 			
 				// 2. Calculate destinations (output paths and URLs)
 
@@ -40,7 +39,7 @@ namespace PowerSite.Actions
 				}
 
 				// 3. XCopy static pages over the top of the theme
-				FileSystem.CopyDirectory(_helper.Paths["Static"], cachePath);
+				FileSystem.CopyDirectory(_helper.Paths["static"], cachePath);
 
 				// 4. Parallel: Render Markdown for each
 				_helper.RenderDocuments();

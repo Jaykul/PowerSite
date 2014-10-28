@@ -36,6 +36,10 @@
 
 	# Controls how many posts are rendered on each index page
 	PostsPerArchivePage = 5
+
+	# Date format used to display post dates.
+	# Passed to DateTimeOffset.ToString(...)
+	DateFormat = 'yyyy-MM-dd H:mm'
 ####################
 ### SETTINGS BELOW THIS ARE WISHFUL THINKING
 ####################
@@ -51,7 +55,4 @@
 	#	[System.TimeZoneInfo]::GetSystemTimeZones() | ft Id, DisplayName -auto
 	TimeZoneInfo = "Eastern Standard Time"
 
-	# Date format used to display post dates.
-	# Passed to DateTimeOffset.ToString(...)
-	DateFormat = 'YYYYY-mm-dd H:MM'
 }

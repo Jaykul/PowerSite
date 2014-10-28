@@ -71,7 +71,7 @@
     <Compile Include="Utility.cs" />
     <Compile Include="Builtin\Renderers\MarkdownRenderer.cs" />
     <Compile Include="Builtin\Renderers\RazorRenderer.cs" />
-    <Compile Include="Actions\ImportPowerSiteCommand.cs" />
+    <Compile Include="Actions\GetPowerSiteCommand.cs" />
     <Compile Include="Actions\BasePowerSiteCommand.cs" />
     <Compile Include="IRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,15 +79,20 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="Script\UpdatePowerSite.ps1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Script\templates.txt" />
+    <Content Include="PowerSite\PowerSite.psm1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="PowerSite\PowerSite.psd1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>nuget restore $(SolutionPath)</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetDir)\*.dll $(TargetDir)\PowerSite</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

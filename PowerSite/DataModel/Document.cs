@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -9,12 +10,12 @@ namespace PowerSite.DataModel
 {
 	public class Document : NamedContentBase
 	{
-		public Document(Author author, string path, string id = null, bool preLoadContent = false) : base(path, id, preLoadContent)
+		public Document(Author author, string path, string id = null, string dateTimeFormat = "yyyy-MM-dd H:mm", bool preLoadContent = false)
+			: base(path, id, preLoadContent)
 		{
-			if (Author == null)
-			{
-				Author = author;
-			}
+			if (Author == null) Author = author;
+			if (Tags == null || Tags.Length == 0) Tags = new string[] {};
+			_dtFormat = dateTimeFormat;
 		}
 
 		public string Title { get; set; }
@@ -23,11 +24,15 @@ namespace PowerSite.DataModel
 
 		public DateTime Date { get; set; }
 
+		public string DateString { get { return Date.ToString(_dtFormat, CultureInfo.InvariantCulture); } }
+
 		public string[] Tags { get; set; }
 
 		public bool Draft { get; set; }
 
 		private string _summary;
+		private readonly string _dtFormat;
+
 		public string Summary {
 			get
 			{

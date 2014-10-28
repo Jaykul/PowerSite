@@ -28,13 +28,18 @@ namespace PowerSite
 		private Site(string siteRootPath)
 			: base(siteRootPath)
 		{
-			foreach (var path in new[] { "Pages", "Posts", "Static", "Themes", "Plugins", "Output", "Cache" })
+			foreach (var path in new[] { "pages", "posts", "static", "themes" })
 			{
 				Paths[path] = Utility.CreateDirectoryIfNecessary(Path.Combine(siteRootPath, path));
 			}
 
+			foreach (var path in new[] {"plugins", "output", "cache"})
+			{
+				Paths[path] = Path.Combine(siteRootPath, path);
+			}
+
 			Config = ImportSiteConfig();
-		
+
 			ActiveSites.Add(siteRootPath, this);
 		}
 
@@ -64,18 +69,19 @@ namespace PowerSite
 			Title = siteConfig.Title;
 			Description = siteConfig.Description;
 			Author = LanguagePrimitives.ConvertTo<Author>(siteConfig.Author);
+			DateFormat = siteConfig.DateFormat;
 
 			BlogPath = siteConfig.BlogPath ?? "";
 			PrettyUrl = siteConfig.PrettyUrl ?? true;
 			PageSize = siteConfig.PostsPerArchivePage ?? 5;
 
-			Utility.CreateDirectoryIfNecessary(Path.Combine(Paths["Cache"], BlogPath));
-			Utility.CreateDirectoryIfNecessary(Path.Combine(Paths["Output"], BlogPath));
-
-			Theme = new Theme(Paths["Themes"], siteConfig.Theme ?? "BootstrapBlog");
+			Theme = new Theme(Paths["themes"], siteConfig.Theme ?? "BootstrapBlog");
 
 			return siteConfig;
 		}
+
+		public string DateFormat { get; set; }
+
 		#endregion Initialization
 
 		public string RootUrl
@@ -148,40 +154,44 @@ namespace PowerSite
 		public void LoadDocuments()
 		{
 			Pages = IdentityCollection<Document>.Create(
-				from file in Directory.EnumerateFiles(Paths["Pages"], "*.*", SearchOption.AllDirectories).AsParallel()
-						  let fileId = Path.GetFileNameWithoutExtension(file).Slugify()
-						  let relativeUrl = Path.Combine(Path.GetDirectoryName(file).Substring(Paths["Pages"].Length), fileId + ".html").Replace('\\', '/')
-						  select new Document(Author, file, fileId)
-						  {
-							  RelativeUrl = "/" + relativeUrl,
-							  FullyQualifiedUrl = RootUrl.TrimEnd('/') + "/" + relativeUrl
-						  });
+				from file in Directory.EnumerateFiles(Paths["pages"], "*.*", SearchOption.AllDirectories).AsParallel()
+				let fileId = Path.GetFileNameWithoutExtension(file).Slugify()
+				let relativeUrl = Path.Combine(Path.GetDirectoryName(file).Substring(Paths["pages"].Length), fileId + ".html").Replace('\\', '/')
+				select new Document(Author, file, fileId, dateTimeFormat: DateFormat)
+				{
+					RelativeUrl = "/" + relativeUrl,
+					FullyQualifiedUrl = RootUrl.TrimEnd('/') + "/" + relativeUrl
+				} into pages
+				orderby pages.Date descending
+				select pages);
 
 			Posts = IdentityCollection<Document>.Create(
-				from file in Directory.EnumerateFiles(Paths["Posts"], "*.*", SearchOption.TopDirectoryOnly).AsParallel()
-						  let fileId = Path.GetFileNameWithoutExtension(file).Slugify()
-						  let relativeUrl = Path.Combine(BlogPath, (fileId + (PrettyUrl ? "/index.html" : ".html"))).Replace('\\', '/')
-						  select new Document(Author, file, fileId)
-						  {
-							  RelativeUrl = "/" + relativeUrl,
-							  FullyQualifiedUrl = RootUrl.TrimEnd('/') + "/" + relativeUrl
-						  });
-		
+				from file in Directory.EnumerateFiles(Paths["posts"], "*.*", SearchOption.TopDirectoryOnly).AsParallel()
+				let fileId = Path.GetFileNameWithoutExtension(file).Slugify()
+				let relativeUrl = Path.Combine(BlogPath, (fileId + (PrettyUrl ? "/index.html" : ".html"))).Replace('\\', '/')
+				select new Document(Author, file, fileId, dateTimeFormat: DateFormat)
+				{
+					RelativeUrl = "/" + relativeUrl,
+					FullyQualifiedUrl = RootUrl.TrimEnd('/') + "/" + relativeUrl
+				} into posts
+				orderby posts.Date descending
+				select posts);
+
 			Theme.Load();
 		}
-	
+
 		public void RenderDocuments()
 		{
 			Current = this;
 			Parallel.ForEach(Pages, p => Render(p));
 			Parallel.ForEach(Posts, p => Render(p));
 		}
-	
+
 		public void RenderTemplates()
 		{
 			Current = this;
-			Parallel.ForEach(Posts, p => Render(Theme.Layouts["post"], p, Path.Combine(Paths["Cache"], p.RelativeUrl.TrimStart('/'))));
-			Parallel.ForEach(Pages, p => Render(Theme.Layouts["page"], p, Path.Combine(Paths["Cache"], p.RelativeUrl.TrimStart('/'))));
+			Parallel.ForEach(Posts, p => Render(Theme.Layouts["post"], p, Path.Combine(Paths["cache"], p.RelativeUrl.TrimStart('/'))));
+			Parallel.ForEach(Pages, p => Render(Theme.Layouts["page"], p, Path.Combine(Paths["cache"], p.RelativeUrl.TrimStart('/'))));
 
 			Console.WriteLine("Rendered {0} blog posts", Posts.Count);
 			Console.WriteLine("Rendered {0} pages", Pages.Count);
@@ -191,21 +201,29 @@ namespace PowerSite
 				var layout = Theme.Layouts["archive"];
 
 				// the main site index
-				RenderIndex(layout, Posts.ToList(), Path.Combine(Paths["Cache"], BlogPath));
+				RenderIndex(layout, Posts.ToList(), Path.Combine(Paths["cache"], BlogPath));
+				Console.WriteLine("Rendered index page");
+			
 				// tag indexes
 				foreach (var tag in Tags.Keys)
 				{
-					RenderIndex(layout, GetPostsByTag(tag), Path.Combine(Paths["Cache"], BlogPath, "tags", tag));
+					RenderIndex(layout, GetPostsByTag(tag), Path.Combine(Paths["cache"], BlogPath, "tags", tag.Slugify()));
+					Console.WriteLine("Rendered tag page {0}", tag);
 				}
-
-				Console.WriteLine("Rendered archive");
 			}
 			if (Theme.Layouts.Contains("feed"))
 			{
 				var layout = Theme.Layouts["feed"];
-				var outputPath = Path.Combine(Paths["Cache"], BlogPath, "feed.xml");
-				var output = base[layout.Extension].Render(SiteRootPath, layout.RawContent, Posts.OrderByDescending(doc => doc.Date).Take(5));
-				File.WriteAllText(outputPath, output);
+				// the main site feed
+				var outputPath = Path.Combine(Paths["cache"], BlogPath, "feed.xml");
+				Render(layout, Posts.Take(5), outputPath);
+				Console.WriteLine("Rendered feed");
+				// tag indexes
+				foreach (var tag in Tags.Keys)
+				{
+					Render(layout, GetPostsByTag(tag).Take(5), Path.Combine(Paths["cache"], BlogPath, "tags", tag.Slugify(), "feed.xml"));
+					Console.WriteLine("Rendered tag feed {0}", tag);
+				}
 			}
 		}
 
