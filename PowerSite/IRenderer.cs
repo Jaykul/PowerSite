@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PowerSite.DataModel;
 
 namespace PowerSite
 {
@@ -18,7 +19,7 @@ namespace PowerSite
         /// <param name="template">Template to render.</param>
         /// <param name="data">Data provided to template.</param>
         /// <returns>Rendered template content.</returns>
-        string Render(string siteKey, string template, dynamic data);
+        string Render(string siteKey, NamedContentBase template, dynamic data);
     }
 
     public interface IExtension

@@ -124,7 +124,7 @@ namespace PowerSite
 
 		public string Render(NamedContentBase layout, dynamic model)
 		{
-			return _renderEngines[layout.Extension].Render(SiteRootPath, layout.RawContent, model);
+			return _renderEngines[layout.Extension].Render(SiteRootPath, layout, model);
 		}
 
 		protected void Render(NamedContentBase layout, dynamic model, string outputPath)

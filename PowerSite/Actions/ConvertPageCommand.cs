@@ -50,7 +50,7 @@ namespace PowerSite.Actions
 				foreach (var file in files)
 				{
 					Markup = new NamedContentBase(file, preloadContent: true);
-					WriteObject(helper[Markup.Extension].Render(SiteRootPath, Markup.RawContent, Data));
+					WriteObject(helper[Markup.Extension].Render(SiteRootPath, Markup, Data));
 				}
 			}
 			else
@@ -58,7 +58,7 @@ namespace PowerSite.Actions
 				if (helper == null)
 					helper = Site.ForPath(GetPluginPath(Markup.SourcePath));
 
-				Markup.RenderedContent = helper[Markup.Extension].Render(SiteRootPath, Markup.RawContent, Data);
+				Markup.RenderedContent = helper[Markup.Extension].Render(SiteRootPath, Markup, Data);
 				WriteObject(Markup);
 			}
 		}
