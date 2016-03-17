@@ -52,8 +52,8 @@ function FastPushGitHub {
 	#	3. Switch to the "master" branch and copy from the output, push.
 	[CmdletBinding(DefaultParameterSetName="PowerSite")]
 	param(
-		[Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
-		[String]$Name,
+		[Parameter(Position=0, ValueFromRemainingArguments=$true)]
+		[String]$Message = "FastPush from PowerSite",
 
 		# The root of the PowerSite to put it in
 		[Parameter(ParameterSetName="Path")]
@@ -81,13 +81,17 @@ function FastPushGitHub {
 
 	git checkout $SourceBranchName --force
 
-	Update-PowerSite -SiteRootPath $pwd
+	Update-PowerSite -SiteRootPath $Root
 
 	git checkout $PublishBranchName --force
 
-	ls -exclude output, .git\, .gitignore | rm -Recurse
+	ls -exclude output, .git\, .gitignore | rm -Recurse -ErrorActionPreference SilentlyContinue -ErrorVariable UnDeleted
+	if($UnDeleted) {
+		$UnDeleted | %{ Write-Warning ($_ | fl * -force | Out-String) }
+		throw "Couldn't delete all the files. Stupid thumbs.db"
+	}
 	cp .\Output\* $Pwd -Force -Recurse
 	git add *
-	git commit -a -m "FastPush from PowerSite"
+	git commit -a -m $Message
 	git push
 }

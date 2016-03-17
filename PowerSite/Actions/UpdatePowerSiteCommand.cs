@@ -22,7 +22,7 @@ namespace PowerSite.Actions
 				var outputPath = _helper.Paths["output"];
 			
 				// 2. Calculate destinations (output paths and URLs)
-
+			
 				if (FileSystem.DirectoryExists(cachePath))
 				{
 					FileSystem.DeleteDirectory(cachePath, DeleteDirectoryOption.DeleteAllContents);
