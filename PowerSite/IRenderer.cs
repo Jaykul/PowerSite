@@ -22,8 +22,8 @@ namespace PowerSite
         string Render(string siteKey, NamedContentBase template, dynamic data);
     }
 
-    public interface IExtension
+    public class RedererMetadata
     {
-        String Extension { get; }
+        public String Extension { get; set; }
     }
 }

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
+using System.Composition;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using PowerSite.Actions;
 using PowerSite.DataModel;
 using RazorEngine;
+using RazorEngine.Compilation;
+using RazorEngine.Compilation.ReferenceResolver;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
 
@@ -23,7 +26,6 @@ namespace PowerSite.Builtin.Renderers
 			var config = new TemplateServiceConfiguration { TemplateManager = new TemplateManager(siteKey) };
 			config.Namespaces.Add("System.IO");
 			config.Namespaces.Add("RazorEngine.Text");
-
             using (var service = RazorEngineService.Create(config))
 			{
 				Engine.Razor = service;
@@ -44,10 +46,8 @@ namespace PowerSite.Builtin.Renderers
 				}
 				catch (TemplateCompilationException e)
 				{
-					foreach (var error in e.CompilerErrors)
-					{
-						Console.Error.WriteLine(error);
-					}
+					Console.Error.WriteLine(e.Message);
+                    throw;
 				}
 			}
 
@@ -80,7 +80,7 @@ namespace PowerSite.Builtin.Renderers
                     }
                     return new LoadedTemplateSource(layout.RawContent, layout.SourcePath);
                 }
-                catch (KeyNotFoundException knf)
+                catch (KeyNotFoundException)
                 {
                     Console.Error.WriteLine("Layout not found: Layout {0} extension {1}", key.Name, extension);
                     return new LoadedTemplateSource("Raw(@Model)", null);
@@ -106,4 +106,5 @@ namespace PowerSite.Builtin.Renderers
 		public Site Site { get; set; }
 
 	}
+
 }

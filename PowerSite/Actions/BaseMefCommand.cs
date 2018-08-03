@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
+﻿using System;
+using System.Composition;
+using System.Composition.Hosting;
 using System.IO;
 using System.Management.Automation;
 
@@ -19,7 +20,7 @@ namespace PowerSite.Actions
 			base.BeginProcessing();
 		}
 	
-		private CompositionContainer _container;
+		private CompositionHost _container;
 
 		/// <summary>
 		/// Initializes the plugin catalog.
@@ -27,10 +28,8 @@ namespace PowerSite.Actions
 		/// <param name="siteRootPath">The site root path.</param>
 		protected virtual void InitializePluginCatalog(string siteRootPath)
 		{
-			var catalog = new AggregateCatalog();
-			//Adds all the parts found in the same assembly as the Program class
-			var assembly = typeof (BasePowerSiteCommand).Assembly;
-			catalog.Catalogs.Add(new AssemblyCatalog(assembly));
+            //Adds all the parts found in the same assembly as the Program class
+            var configuration = new ContainerConfiguration().WithAssembly(typeof(BaseMefCommand).Assembly);
 
 			if (!string.IsNullOrEmpty(siteRootPath) && Directory.Exists(siteRootPath))
 			{
@@ -39,7 +38,7 @@ namespace PowerSite.Actions
 
 				if (Directory.Exists(pluginRoot))
 				{
-					catalog.Catalogs.Add(new DirectoryCatalog(pluginRoot));
+                    configuration.WithAssembliesInPath(pluginRoot);
 				}
 				else
 				{
@@ -51,14 +50,11 @@ namespace PowerSite.Actions
 				WriteWarning("Could not determine module root");
 			}
 
-			//Create the CompositionContainer with the parts in the catalog
-			_container = new CompositionContainer(catalog);
-
 			try
 			{
-				_container.ComposeParts(this);
-			}
-			catch (CompositionException compositionException)
+				_container = configuration.CreateContainer();
+            }
+			catch (Exception compositionException)
 			{
 				WriteError(new ErrorRecord(compositionException, "PluginFailure", ErrorCategory.ResourceUnavailable, _container));
 			}

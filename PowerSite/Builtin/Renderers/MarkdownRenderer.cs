@@ -4,7 +4,7 @@ using PowerSite.DataModel;
 
 namespace PowerSite.Builtin.Renderers
 {
-	using System.ComponentModel.Composition;
+	using System.Composition;
 
 	using MarkdownSharp;
 

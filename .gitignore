@@ -157,3 +157,4 @@ $RECYCLE.BIN/
 packages/
 PowerSite.Specs/Samples/Blog/Cache/
 PowerSite.Specs/Samples/Blog/Output/
+.vs/

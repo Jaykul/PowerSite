@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
+using System.Composition;
+using System.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using PowerSite.Actions;
@@ -12,9 +12,9 @@ namespace PowerSite
 {
 	public class EngineHost : IReadOnlyDictionary<string, IRenderer>
 	{
-		private IEnumerable<Lazy<IRenderer, IExtension>> _renderingEngines;
+		private IEnumerable<Lazy<IRenderer, RedererMetadata>> _renderingEngines;
 		private readonly Dictionary<string, IRenderer> _renderEngines = new Dictionary<string, IRenderer>();
-		private CompositionContainer _container;
+		private CompositionHost _container;
 
 		public readonly List<Exception> Errors = new List<Exception>();
 		public bool? HasException = null;
@@ -35,9 +35,11 @@ namespace PowerSite
 		}
 
 		[ImportMany]
-		protected IEnumerable<Lazy<IRenderer, IExtension>> RenderingEngines
+		protected IEnumerable<Lazy<IRenderer, RedererMetadata>> RenderingEngines
 		{
-			get { return _renderingEngines; }
+			get {
+                return _renderingEngines;
+            }
 			set
 			{
 				_renderingEngines = value;
@@ -52,10 +54,8 @@ namespace PowerSite
 		/// </summary>
 		protected void InitializeEngineCatalog()
 		{
-			var catalog = new AggregateCatalog();
-			//Adds all the parts found in the same assembly as the Program class
-			var assembly = typeof(Site).Assembly;
-			catalog.Catalogs.Add(new AssemblyCatalog(assembly));
+            //Adds all the parts found in the same assembly as the Program class
+            var configuration = new ContainerConfiguration().WithAssembly(typeof(Site).Assembly);
 
 			if (!string.IsNullOrEmpty(SiteRootPath) && Directory.Exists(SiteRootPath))
 			{
@@ -64,21 +64,19 @@ namespace PowerSite
 
 				if (Directory.Exists(pluginRoot))
 				{
-					catalog.Catalogs.Add(new DirectoryCatalog(pluginRoot));
+                    configuration.WithAssembliesInPath(pluginRoot);
 				}
 				// Otherwise: WriteVerbose("No Plugins directory found in site root: " + siteRootPath);
 			}
 			// Otherwise: WriteWarning("Could not determine module root");
 
-			//Create the CompositionContainer with the parts in the catalog
-			_container = new CompositionContainer(catalog);
-
 			try
 			{
-				_container.ComposeParts(this);
+                _container = configuration.CreateContainer();
+                _container.SatisfyImports(this);
 				HasException = true;
 			}
-			catch (CompositionException compositionException)
+			catch (Exception compositionException)
 			{
 				Errors.Add(compositionException);
 				HasException = false;
