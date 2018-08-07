@@ -26,6 +26,11 @@ namespace PowerSite.Builtin.Renderers
 			var config = new TemplateServiceConfiguration { TemplateManager = new TemplateManager(siteKey) };
 			config.Namespaces.Add("System.IO");
 			config.Namespaces.Add("RazorEngine.Text");
+            
+            // The templates being used are inherently trusted, not isolated
+            config.DisableTempFileLocking = true;
+            config.CachingProvider = new DefaultCachingProvider(t => { });
+
             using (var service = RazorEngineService.Create(config))
 			{
 				Engine.Razor = service;
