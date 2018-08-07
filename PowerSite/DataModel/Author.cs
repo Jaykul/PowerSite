@@ -5,7 +5,7 @@ namespace PowerSite.DataModel
 {
     public class Author : IIdentityObject
     {
-        private readonly Regex _parser = new Regex(@"(?<name>.*)\s+(?:\((?<id>[^\)].*)\))?\s+(?:<(?<email>[^>]+)>)?\s+(?<url>https?://.*)?(?:$|\s)", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
+        private readonly Regex _parser = new Regex(@"(?<name>.*)\s+(?:\((?<id>[^\)].*)\))?(?:\s*<(?<email>[^>]+)>\s*)?(?<url>https?://.*)?(?:$|\s)", RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
 
         public Author() {}
 
