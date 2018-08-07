@@ -6,26 +6,19 @@ namespace PowerSite.Builtin.Renderers
 {
 	using System.Composition;
 
-	using MarkdownSharp;
+	using Kiwi.Markdown;
 
-	[Export(typeof(IRenderer))]
+    [Export(typeof(IRenderer))]
 	[ExportMetadata("Extension", "md")]
 	[Cmdlet(VerbsData.ConvertFrom, "Markdown")]
 
 	public class MarkdownRenderer : IRenderer
 	{
 
-		public MarkdownRenderer()
-		{
-			MarkdownEngine = new Markdown(new MarkdownOptions() { AutoHyperlink = true });
-		}
-
-		private Markdown MarkdownEngine { get; set; }
-
 		public string Render(string siteKey, NamedContentBase template, dynamic data)
-		{
-			var engine = new Markdown(new MarkdownOptions() { AutoHyperlink = true });
-			return engine.Transform(template.RawContent).Trim();
+        {
+            var markdown = new MarkdownService(null);
+            return markdown.ToHtml(template.RawContent).Trim();
 		}
-	}
+    }
 }
