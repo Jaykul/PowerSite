@@ -1,12 +1,12 @@
 ﻿
 using System.Management.Automation;
+using System.Composition;
+using Markdig;
+
 using PowerSite.DataModel;
 
 namespace PowerSite.Builtin.Renderers
 {
-	using System.Composition;
-
-	using Kiwi.Markdown;
 
     [Export(typeof(IRenderer))]
 	[ExportMetadata("Extension", "md")]
@@ -14,11 +14,9 @@ namespace PowerSite.Builtin.Renderers
 
 	public class MarkdownRenderer : IRenderer
 	{
-
 		public string Render(string siteKey, NamedContentBase template, dynamic data)
         {
-            var markdown = new MarkdownService(null);
-            return markdown.ToHtml(template.RawContent).Trim();
+            return Markdown.ToHtml(template.RawContent).Trim();
 		}
     }
 }

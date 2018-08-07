@@ -4,12 +4,12 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.15.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.Composition" Version="1.0.31" />
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0-preview-06" />
 
     <PackageReference Include="RazorEngine" Version="3.10.0" />
-    <PackageReference Include="Kiwi.Markdown" Version="0.8.2" />
 
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
     <PackageReference Include="System.Reflection.Metadata" Version="1.6.0" />
