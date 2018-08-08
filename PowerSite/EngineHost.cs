@@ -38,8 +38,8 @@ namespace PowerSite
 		protected IEnumerable<Lazy<IRenderer, RedererMetadata>> RenderingEngines
 		{
 			get {
-                return _renderingEngines;
-            }
+				return _renderingEngines;
+			}
 			set
 			{
 				_renderingEngines = value;
@@ -54,8 +54,8 @@ namespace PowerSite
 		/// </summary>
 		protected void InitializeEngineCatalog()
 		{
-            //Adds all the parts found in the same assembly as the Program class
-            var configuration = new ContainerConfiguration().WithAssembly(typeof(Site).Assembly);
+			//Adds all the parts found in the same assembly as the Program class
+			var configuration = new ContainerConfiguration().WithAssembly(typeof(Site).Assembly);
 
 			if (!string.IsNullOrEmpty(SiteRootPath) && Directory.Exists(SiteRootPath))
 			{
@@ -64,7 +64,7 @@ namespace PowerSite
 
 				if (Directory.Exists(pluginRoot))
 				{
-                    configuration.WithAssembliesInPath(pluginRoot);
+					configuration.WithAssembliesInPath(pluginRoot);
 				}
 				// Otherwise: WriteVerbose("No Plugins directory found in site root: " + siteRootPath);
 			}
@@ -72,8 +72,8 @@ namespace PowerSite
 
 			try
 			{
-                _container = configuration.CreateContainer();
-                _container.SatisfyImports(this);
+				_container = configuration.CreateContainer();
+				_container.SatisfyImports(this);
 				HasException = true;
 			}
 			catch (Exception compositionException)

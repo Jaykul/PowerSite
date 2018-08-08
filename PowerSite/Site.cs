@@ -33,7 +33,7 @@ namespace PowerSite
 				Paths[path] = Utility.CreateDirectoryIfNecessary(Path.Combine(siteRootPath, path));
 			}
 
-			foreach (var path in new[] {"plugins", "output", "cache"})
+			foreach (var path in new[] { "plugins", "output", "cache" })
 			{
 				Paths[path] = Path.Combine(siteRootPath, path);
 			}
@@ -141,21 +141,23 @@ namespace PowerSite
 			get
 			{
 				return _tags ?? (_tags = Posts.SelectMany(p => p.Tags)
-					.GroupBy(t => t)
+					.GroupBy(t => t.Slugify())
 					.ToDictionary(grouping => grouping.Key, grouping => grouping.Count()));
 			}
 		}
 
 		public IEnumerable<Document> GetPostsByTag(string tag)
 		{
-			return Posts.Where(doc => doc.Tags.Contains(tag));
+			return Posts.Where(doc => doc.Tags.Select(t => t.Slugify()).Contains(tag.Slugify()));
 		}
 
 		public void LoadDocuments()
 		{
+			_tags?.Clear();
+
 			Pages = IdentityCollection<Document>.Create(
 				from file in Directory.EnumerateFiles(Paths["pages"], "*.*", SearchOption.AllDirectories).AsParallel()
-				let fileId = Path.GetFileNameWithoutExtension(file).Slugify()
+				let fileId = file.Slugify()
 				let relativeUrl = Path.Combine(Path.GetDirectoryName(file).Substring(Paths["pages"].Length), fileId + ".html").Replace('\\', '/')
 				select new Document(Author, file, fileId, dateTimeFormat: DateFormat)
 				{
@@ -167,7 +169,7 @@ namespace PowerSite
 
 			Posts = IdentityCollection<Document>.Create(
 				from file in Directory.EnumerateFiles(Paths["posts"], "*.*", SearchOption.TopDirectoryOnly).AsParallel()
-				let fileId = Path.GetFileNameWithoutExtension(file).Slugify()
+				let fileId = file.Slugify()
 				let relativeUrl = Path.Combine(BlogPath, (fileId + (PrettyUrl ? "/index.html" : ".html"))).Replace('\\', '/')
 				select new Document(Author, file, fileId, dateTimeFormat: DateFormat)
 				{
@@ -203,7 +205,7 @@ namespace PowerSite
 				// the main site index
 				RenderIndex(layout, Posts.ToList(), Path.Combine(Paths["cache"], BlogPath));
 				Console.WriteLine("Rendered index page");
-			
+
 				// tag indexes
 				foreach (var tag in Tags.Keys)
 				{
@@ -216,12 +218,12 @@ namespace PowerSite
 				var layout = Theme.Layouts["feed"];
 				// the main site feed
 				var outputPath = Path.Combine(Paths["cache"], BlogPath, "feed.xml");
-				Render(layout, Posts.Take(5), outputPath);
+				Render(layout, Posts.Take(PageSize), outputPath);
 				Console.WriteLine("Rendered feed");
 				// tag indexes
 				foreach (var tag in Tags.Keys)
 				{
-					Render(layout, GetPostsByTag(tag).Take(5), Path.Combine(Paths["cache"], BlogPath, "tags", tag.Slugify(), "feed.xml"));
+					Render(layout, GetPostsByTag(tag).Take(PageSize), Path.Combine(Paths["cache"], BlogPath, "tags", tag.Slugify(), "feed.xml"));
 					Console.WriteLine("Rendered tag feed {0}", tag);
 				}
 			}

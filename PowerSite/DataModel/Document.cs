@@ -14,7 +14,7 @@ namespace PowerSite.DataModel
 			: base(path, id, preLoadContent)
 		{
 			if (Author == null) Author = author;
-			if (Tags == null || Tags.Length == 0) Tags = new string[] {};
+			if (Tags == null || Tags.Length == 0) Tags = new string[] { };
 			_dtFormat = dateTimeFormat;
 		}
 
@@ -33,7 +33,8 @@ namespace PowerSite.DataModel
 		private string _summary;
 		private readonly string _dtFormat;
 
-		public string Summary {
+		public string Summary
+		{
 			get
 			{
 				if (_summary == null)
@@ -55,11 +56,11 @@ namespace PowerSite.DataModel
 		public NamedContentBase(string path, string id = null, bool preloadContent = false)
 		{
 			SourcePath = path;
-			Id = id ?? Path.GetFileNameWithoutExtension(path).Slugify();
-			Extension = (Path.GetExtension(path) ?? "md").Trim(new []{'.'});
+			Id = id ?? path.Slugify();
+			Extension = (Path.GetExtension(path) ?? "md").Trim(new[] { '.' });
 			LoadFile(true, preloadContent);
 		}
-	
+
 		public string SourcePath { get; protected set; }
 		public string Id { get; set; }
 		public string Extension { get; set; }
@@ -82,7 +83,7 @@ namespace PowerSite.DataModel
 		public dynamic Metadata { get; set; }
 		public string RelativeUrl { get; set; }
 		public string FullyQualifiedUrl { get; set; }
-	
+
 		private static readonly Regex MetadataKeyValue = new Regex(@"^(?<key>\w+):\s?(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
 
 		protected void LoadRawContent()
@@ -94,7 +95,7 @@ namespace PowerSite.DataModel
 		{
 			LoadFile(true, false);
 		}
-	
+
 		private void LoadFile(bool keepMetadata, bool keepContent)
 		{
 			var preambleOpened = false;
@@ -112,7 +113,7 @@ namespace PowerSite.DataModel
 					keepMetadata = false;
 				}
 			}
-		
+
 			using (var reader = new StreamReader(SourcePath))
 			{
 				string line;
@@ -166,7 +167,9 @@ namespace PowerSite.DataModel
 								case "tag":
 								case "tags":
 									var tags = value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-										.Select(t => t.Trim()).Where(t => !String.IsNullOrEmpty(t)).ToArray();
+										.Select(t => t.Trim(' ', '.'))
+										.Where(t => !String.IsNullOrEmpty(t))
+										.Distinct(StringComparer.Create(CultureInfo.InvariantCulture, true)).ToArray();
 
 									o.Tags = tags;
 									break;
@@ -197,7 +200,7 @@ namespace PowerSite.DataModel
 				{
 					RawContent = String.Concat(line, "\n", reader.ReadToEnd()).Trim();
 				}
-				
+
 			}
 
 		}
