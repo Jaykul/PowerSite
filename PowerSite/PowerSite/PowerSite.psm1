@@ -85,12 +85,14 @@ function FastPushGitHub {
 
 	git checkout $PublishBranchName --force
 
-	ls -exclude output, .git\, .gitignore | rm -Recurse -ErrorActionPreference SilentlyContinue -ErrorVariable UnDeleted
+	Start-Sleep 60
+
+	ls -exclude output, .git\, .gitignore, CNAME, index.html | rm -Recurse -ErrorAction SilentlyContinue -ErrorVariable UnDeleted
 	if($UnDeleted) {
 		$UnDeleted | %{ Write-Warning ($_ | fl * -force | Out-String) }
 		throw "Couldn't delete all the files. Stupid thumbs.db"
 	}
-	cp .\Output\* $Pwd -Force -Recurse
+	cp .\Output\* $Root -Force -Recurse
 	git add *
 	git commit -a -m $Message
 	git push
